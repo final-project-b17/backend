@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  price Float
+  status String
+  createdAt DateTime
+  updatedAt DateTime
+  category_id Int
+
+  videos Video[]
+  categories Category? @relation(fields: [category_id], references: [id])
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  title String
+
+  courses Course[]
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String?
+  email String @unique
+  password String
+  role String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+  comment Comment[]
+  ratings Rating[]
+  memberships Membership[]
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  course_id Int
+  user_id Int
+  status String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User? @relation(fields: [user_id], references: [id])
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  name String
+  type String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[] 
+}
+
+model Membership {
+  id Int @id @default(autoincrement())
+  group_id Int
+  user_id Int
+  role String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  groups Group? @relation(fields: [group_id], references: [id])
+  user User? @relation(fields: [user_id], references: [id])
+}
+
+model Video {
+  id Int @id @default(autoincrement())
+  course_id Int
+  title String
+  description String
+  url String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments Comment[]
+  ratings Rating[]
+  course Course? @relation(fields: [course_id], references: [id])
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  video_id Int
+  user_id Int
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  videos Video?  @relation(fields: [video_id], references: [id])
+  user User? @relation(fields: [user_id], references: [id])
+}
+
+model Rating {
+  id Int @id @default(autoincrement())
+  video_id Int
+  user_id Int
+  rating Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  video Video? @relation(fields: [video_id], references: [id])
+  user User? @relation(fields: [user_id], references: [id])
+}
