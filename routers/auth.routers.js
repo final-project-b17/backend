@@ -4,5 +4,7 @@ const express = require("express"),
 
 router.post("/register", controller.register);
 router.post("/login", controller.login);
+router.post("/reset-password", controller.resetPassword);
+router.post("/set-password", controller.setPassword);
 
 module.exports = router;

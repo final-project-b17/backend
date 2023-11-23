@@ -4,6 +4,7 @@ const { users } = require("../models"),
 	bcrypt = require("bcrypt");
 require("dotenv").config();
 const secret_key = process.env.JWT_KEY || "no_secret";
+const nodemailer = require("nodemailer");
 
 module.exports = {
 	register: async (req, res) => {
@@ -83,7 +84,8 @@ module.exports = {
 			});
 
 			if (!findUser) {
-				return res.json("error", {
+				return res.status(400).json({
+					error: true,
 					errorMessage: "User not found!",
 				});
 			}
@@ -119,19 +121,21 @@ module.exports = {
 			transporter.sendMail(mailOptions, (err) => {
 				if (err) {
 					console.log(err);
-					return res.render("error", {
+					return res.status(500).json({
+						error: true,
 						errorMessage: "Invalid or expired reset key!",
 					});
 				}
 
-				return res.render("success", {
+				return res.status(200).json({
+					success: true,
 					successMessage: "Password reset link was sent to your email!",
 				});
 			});
 		} catch (error) {
 			console.log(error);
-			Sentry.captureException(error);
-			return res.render("error", {
+			return res.status(500).json({
+				error: true,
 				errorMessage: "An error occurred",
 			});
 		}
@@ -146,7 +150,8 @@ module.exports = {
 			});
 
 			if (!findUser) {
-				return res.render("error", {
+				return res.status(400).json({
+					error: true,
 					errorMessage: "Invalid or expired reset key!",
 				});
 			}
@@ -161,13 +166,14 @@ module.exports = {
 				},
 			});
 
-			return res.render("success", {
-				successMessage: "Password reset was successfully!",
+			return res.status(200).json({
+				success: true,
+				successMessage: "Password reset was successful!",
 			});
 		} catch (error) {
 			console.log(error);
-			Sentry.captureException(error);
-			return res.render("error", {
+			return res.status(500).json({
+				error: true,
 				errorMessage: "An error occurred",
 			});
 		}

@@ -6,10 +6,9 @@ const express = require("express"),
 	bodyParser = require("body-parser");
 
 require("dotenv").config();
-
-app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use("/api/v1", router);
 
