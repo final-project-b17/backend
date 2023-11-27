@@ -2,6 +2,7 @@ const express = require("express"),
 	router = express.Router(),
 	controller = require("../controllers/course.controller");
 
-router.get("/list-course", controller.listCourse);
+router.get("/", controller.listCourse);
+router.get("/search", controller.searchAndFilter);
 
 module.exports = router;

@@ -6,37 +6,72 @@ require("dotenv").config();
 module.exports = {
 	listCourse: async (req, res) => {
 		try {
-			const { category_id, search, page = 1, pageSize = 10 } = req.query;
-
-			let where = {};
-
-			if (category_id) {
-				where = { category_id: parseInt(category_id) };
-			}
-
-			if (search) {
-				where = { ...where, OR: [{ title: { contains: search } }, { description: { contains: search } }] };
-			}
-
 			const course = await courses.findMany({
-				where,
-				include: { videos: true, categories: true },
-				skip: (page - 1) * pageSize,
-				take: pageSize,
+				include: {
+					Category: true,
+					chapters: true,
+					orders: true,
+					comments: true,
+					ratings: true,
+				},
 			});
 
-			if (course.length === 0) {
-				return res.status(404).json({
-					message: "No courses found matching the specified criteria.",
+			if (!course.length === 0) {
+				res.status(404).json({
+					success: false,
+					message: "No courses found",
 				});
 			}
 
-			res.json(course);
+			res.json({
+				status: "success",
+				data: course,
+			});
 		} catch (error) {
 			console.error("Error retrieving courses:", error);
 			res.status(500).json({
-				status: "error",
-				message: "Internal Server Error",
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
+
+	searchAndFilter: async (req, res) => {
+		try {
+			const { title, type_course, level, category_id } = req.query;
+
+			const course = await courses.findMany({
+				where: {
+					title: { contains: title || "" },
+					type_course: type_course || undefined,
+					level: level || undefined,
+					category_id: category_id ? parseInt(category_id, 10) : undefined,
+				},
+				include: {
+					Category: true,
+					chapters: true,
+					orders: true,
+					comments: true,
+					ratings: true,
+				},
+			});
+
+			if (!course || course.length === 0) {
+				return res.json({
+					success: false,
+					message: "No courses found with the specified criteria",
+				});
+			}
+
+			res.json({
+				success: true,
+				data: course,
+			});
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
 			});
 		}
 	},
