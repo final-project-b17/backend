@@ -1,13 +1,14 @@
 const express = require("express"),
 	router = express.Router(),
 	authRouter = require("./auth.routers"),
-	courseRouter = require("./course.router"),
-	paginationRouter = require("./pagination.router");
+	categoryRouter = require("./category.router"),
+	courseRouter = require("./course.router");
 
+// paginationRouter = require("./pagination.router");
 // const authenticateUser = require("../middlewares/authentication");
 
 router.use("/auth", authRouter);
 router.use("/courses", courseRouter);
-router.use("/", paginationRouter);
+router.use("/categories", categoryRouter);
 
 module.exports = router;
