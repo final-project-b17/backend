@@ -9,4 +9,5 @@ module.exports = {
 	videos: prisma.Video,
 	comments: prisma.Comment,
 	ratings: prisma.Rating,
+	Chapter: prisma.Chapter,
 };
