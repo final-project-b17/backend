@@ -79,4 +79,43 @@ module.exports = {
 			});
 		}
 	},
+
+	// Get detail course with Id params
+	detailCourse: async (req, res) => {
+		try {
+			const coursesData = await courses.findUnique({
+				where: {
+					id: parseInt(req.params.id),
+				},
+				include: {
+					Category: true,
+					chapters: true,
+					materials: true,
+					orders: true,
+					comments: true,
+					ratings: true,
+					userProgress: true,
+				},
+			});
+
+			if (!coursesData || coursesData.length === 0) {
+				return res.json({
+					success: false,
+					message: "No courses found with the specified criteria",
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				message: "Success for retrieving course data",
+				courses: coursesData,
+			});
+		} catch (error) {
+			console.log(error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
 };
