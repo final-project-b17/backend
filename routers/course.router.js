@@ -6,10 +6,11 @@ const express = require("express"),
 // /courses
 router.get("/", courseController.listCourse);
 router.get("/detail-course/:id", courseController.detailCourse);
+router.post("/add-course", courseController.createCourse);
 
 // /courses/chapters
 router.get("/chapters", chapterController.getChapters);
-router.post("/chapters/create", chapterController.createChapter);
+router.post("/chapters/add-chapter", chapterController.createChapter);
 router.get("/chapters/:id", chapterController.getChapterId);
 router.put("/chapters/update/:id", chapterController.updateChapterId);
 router.delete("/chapters/delete/:id", chapterController.deleteChapterId);

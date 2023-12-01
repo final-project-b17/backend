@@ -118,4 +118,42 @@ module.exports = {
 			});
 		}
 	},
+
+	// Adding new course
+	createCourse: async (req, res) => {
+		try {
+			// Check if the user has admin role
+			if (req.userRole !== "admin") {
+				return res.status(403).json({
+					success: false,
+					message: "Permission denied. Only admins can create courses.",
+				});
+			}
+
+			// Validate and create the new course
+			const createdCourse = await courses.create({
+				data: {
+					title: req.body.title,
+					description: req.body.description,
+					price: parseFloat(req.body.price),
+					type_course: req.body.type_course,
+					level: req.body.level,
+					url_group: req.body.url_group,
+					category_id: parseInt(req.body.category_id),
+				},
+			});
+
+			res.status(201).json({
+				success: true,
+				message: "Course created successfully!",
+				course: createdCourse,
+			});
+		} catch (error) {
+			console.error("Error creating course: ", error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
 };
