@@ -1,34 +1,79 @@
 const { courses } = require("../models"),
 	utils = require("../utils");
-
+	
 require("dotenv").config();
 
 module.exports = {
+	// Display all courses with pagination, search, filter
 	listCourse: async (req, res) => {
 		try {
-			const course = await courses.findMany({
-				include: {
-					Category: true,
-					chapters: true,
-					orders: true,
-					comments: true,
-					ratings: true,
-				},
-			});
+			// Set pagination
+			const page = parseInt(req.query.page) || 1;
+			const pageSize = 10;
+			const skip = (page - 1) * pageSize;
 
-			if (!course.length === 0) {
-				res.status(404).json({
+			// Set search
+			const searchQuery = req.query.search || "";
+			const searchFilter = searchQuery
+				? {
+						OR: [
+							{
+								title: {
+									contains: searchQuery,
+									mode: "insensitive",
+								},
+							},
+							{
+								description: {
+									contains: searchQuery,
+									mode: "insensitive",
+								},
+							},
+						],
+				  }
+				: {};
+
+			// Set filter by rating, price, release date, category, type, and level courses
+			const filterOptions = {
+				where: {
+					...searchFilter,
+					rating: req.query.rating ? { gte: req.query.rating } : undefined,
+					price: req.query.price ? { lte: req.query.price } : undefined,
+					createdAt: req.query.newlyReleased ? { gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) } : undefined,
+					category_id: req.query.category ? parseInt(req.query.category) : undefined,
+					type_course: req.query.typeCourse || undefined,
+					level: req.query.level || undefined,
+				},
+				// Sort by newly created courses
+				orderBy: { createdAt: "desc" },
+				skip: skip,
+				take: pageSize,
+				include: { chapters: true, materials: true, orders: true, comments: true, ratings: true, userProgress: true },
+			};
+
+			const coursesData = await courses.findMany(filterOptions);
+			const totalCoursesData = await courses.count({ where: filterOptions.where });
+
+			if (!coursesData || coursesData.length === 0) {
+				return res.json({
 					success: false,
-					message: "No courses found",
+					message: "No courses found with the specified criteria",
 				});
 			}
 
-			res.json({
+			res.status(200).json({
 				status: "success",
-				data: course,
+				message: "Data for all courses successfully obtained!",
+				courses: coursesData,
+				pagination: {
+					currentPage: page,
+					pageSize: pageSize,
+					totalItems: totalCoursesData,
+					totalPages: Math.ceil(totalCoursesData / pageSize),
+				},
 			});
 		} catch (error) {
-			console.error("Error retrieving courses:", error);
+			console.error("Error retrieving courses: ", error);
 			res.status(500).json({
 				success: false,
 				error: "Internal Server Error",
@@ -36,39 +81,38 @@ module.exports = {
 		}
 	},
 
-	searchAndFilter: async (req, res) => {
+	// Get detail course with Id params
+	detailCourse: async (req, res) => {
 		try {
-			const { title, type_course, level, category_id } = req.query;
-
-			const course = await courses.findMany({
+			const coursesData = await courses.findUnique({
 				where: {
-					title: { contains: title || "" },
-					type_course: type_course || undefined,
-					level: level || undefined,
-					category_id: category_id ? parseInt(category_id, 10) : undefined,
+					id: parseInt(req.params.id),
 				},
 				include: {
 					Category: true,
 					chapters: true,
+					materials: true,
 					orders: true,
 					comments: true,
 					ratings: true,
+					userProgress: true,
 				},
 			});
 
-			if (!course || course.length === 0) {
+			if (!coursesData || coursesData.length === 0) {
 				return res.json({
 					success: false,
 					message: "No courses found with the specified criteria",
 				});
 			}
 
-			res.json({
+			return res.status(200).json({
 				success: true,
-				data: course,
+				message: "Success for retrieving course data",
+				courses: coursesData,
 			});
 		} catch (error) {
-			console.error(error);
+			console.log(error);
 			res.status(500).json({
 				success: false,
 				error: "Internal Server Error",

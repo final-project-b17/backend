@@ -1,13 +1,15 @@
+const courseController = require("../controllers/course.controller");
+
 const express = require("express"),
 	router = express.Router(),
 	authRouter = require("./auth.routers"),
+	categoryRouter = require("./category.router"),
 	courseRouter = require("./course.router"),
-	paginationRouter = require("./pagination.router");
-
-// const authenticateUser = require("../middlewares/authentication");
+	courseMaterialRouter= require("./courseMaterial.routers");
 
 router.use("/auth", authRouter);
+router.use("/categories", categoryRouter);
 router.use("/courses", courseRouter);
-router.use("/", paginationRouter);
+router.use("/course-materials", courseMaterialRouter)
 
 module.exports = router;
