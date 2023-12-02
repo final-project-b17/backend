@@ -24,7 +24,7 @@ module.exports = {
 			const hashedPassword = await utils.cryptPassword(req.body.password);
 			const register = await users.create({
 				data: {
-					name: req.body.name,
+					username: req.body.username, //ubah dari name ke username
 					email: req.body.email,
 					password: hashedPassword,
 					role: req.body.role,
