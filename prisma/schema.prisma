@@ -85,8 +85,8 @@ model User {
   email               String    @unique
   password            String
   role                UserRole
-  otp_code            String
-  resetPasswordToken  String
+  otp_code            String?
+  resetPasswordToken  String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   orders              Order[]
