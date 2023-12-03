@@ -133,7 +133,54 @@
 				}
 			}
 		},
-		"/courses/{id}": {
+		"/courses/create": {
+			"post": {
+				"summary": "Create a new course",
+				"tags": ["Course"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Course Title",
+								"description": "Description of course",
+								"price": 200000,
+								"type_course": "free",
+								"level": "pemula",
+								"url_group": "www.discord.com/backend2",
+								"category_id": 2
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Created!",
+									"categories": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/courses/detail/{id}": {
 			"get": {
 				"summary": "Get details of a specific course",
 				"tags": ["Course"],
@@ -175,8 +222,162 @@
 				}
 			}
 		},
+		"/courses/update/{id}": {
+			"put": {
+				"summary": "Update a course by ID",
+				"tags": ["Course"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the course to be updated",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Updated course data",
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Updated Title",
+								"description": "Updated Description",
+								"price": 29.99,
+								"type_course": "premium",
+								"level": "lanjutan",
+								"url_group": "https://updated-url.com",
+								"category_id": 1
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Course updated successfully",
+									"course": {
+										"id": 1,
+										"title": "Updated Title",
+										"description": "Updated Description",
+										"price": 29.99,
+										"type_course": "premium",
+										"level": "advanced",
+										"url_group": "https://updated-url.com",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-02T12:34:56.789Z",
+										"category_id": 1
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/courses/delete/{id}": {
+			"delete": {
+				"summary": "Delete a course by ID",
+				"tags": ["Course"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the course to be deleted",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Course deleted successfully!"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Course not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Course not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 
 		"/chapters": {
+			"get": {
+				"summary": "Get all chapters",
+				"tags": ["Chapter"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": []
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/chapters/create": {
 			"post": {
 				"summary": "Create a new chapter",
 				"tags": ["Chapter"],
@@ -200,34 +401,6 @@
 								"example": {
 									"success": true,
 									"data": {}
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"example": {
-									"success": false,
-									"error": "Internal Server Error"
-								}
-							}
-						}
-					}
-				}
-			},
-			"get": {
-				"summary": "Get all chapters",
-				"tags": ["Chapter"],
-				"responses": {
-					"200": {
-						"description": "Successful response",
-						"content": {
-							"application/json": {
-								"example": {
-									"success": true,
-									"data": []
 								}
 							}
 						}
@@ -296,7 +469,9 @@
 						}
 					}
 				}
-			},
+			}
+		},
+		"/chapters/update/{id}": {
 			"put": {
 				"tags": ["Chapter"],
 				"summary": "Update a specific chapter",
@@ -346,7 +521,9 @@
 						}
 					}
 				}
-			},
+			}
+		},
+		"/chapters/delete{id}": {
 			"delete": {
 				"tags": ["Chapter"],
 				"summary": "Delete a specific chapter",
@@ -388,7 +565,37 @@
 			}
 		},
 
-		"/categories/add-category": {
+		"/categories": {
+			"get": {
+				"summary": "Get list of categories",
+				"tags": ["Category"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"categories": []
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/create": {
 			"post": {
 				"summary": "Create a new category",
 				"tags": ["Category"],
@@ -411,36 +618,6 @@
 									"success": true,
 									"message": "Created!",
 									"categories": {}
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"example": {
-									"success": false,
-									"error": "Internal Server Error"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/categories": {
-			"get": {
-				"summary": "Get list of categories",
-				"tags": ["Category"],
-				"responses": {
-					"200": {
-						"description": "Successful response",
-						"content": {
-							"application/json": {
-								"example": {
-									"success": true,
-									"categories": []
 								}
 							}
 						}
