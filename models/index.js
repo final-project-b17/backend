@@ -11,4 +11,5 @@ module.exports = {
 	ratings: prisma.Rating,
 	Chapter: prisma.Chapter,
 	courseMaterials: prisma.CourseMaterial,
+
 };

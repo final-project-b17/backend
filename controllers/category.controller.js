@@ -17,12 +17,14 @@ module.exports = {
 				message: "Created!",
 				categories: data,
 			});
-		} catch (error) {}
-		console.log(error);
-		res.status(500).json({
-			success: false,
-			error: "Internal Server Error",
-		});
+      
+		} catch (error) {
+			console.log(error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
 	},
 
 	// Display list category
@@ -34,7 +36,14 @@ module.exports = {
 				success: true,
 				categories: data,
 			});
-		} catch (error) {}
+
+		} catch (error) {
+			console.log(error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
 	},
 
 	// Edit category by id
