@@ -119,4 +119,119 @@ module.exports = {
 			});
 		}
 	},
+
+	// Adding new course
+	createCourse: async (req, res) => {
+		try {
+			// Check if the user has admin role
+			// if (req.userRole !== "admin") {
+			// 	return res.status(403).json({
+			// 		success: false,
+			// 		message: "Permission denied. Only admins can create courses.",
+			// 	});
+			// }
+
+			// Validate and create the new course
+			const createdCourse = await courses.create({
+				data: {
+					title: req.body.title,
+					description: req.body.description,
+					price: parseFloat(req.body.price),
+					type_course: req.body.type_course,
+					level: req.body.level,
+					url_group: req.body.url_group,
+					category_id: parseInt(req.body.category_id),
+				},
+			});
+
+			res.status(201).json({
+				success: true,
+				message: "Course created successfully!",
+				course: createdCourse,
+			});
+		} catch (error) {
+			console.error("Error creating course: ", error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
+
+	// Update Course by Id
+	updateCourse: async (req, res) => {
+		try {
+			const courseId = parseInt(req.params.id);
+
+			// Extract fields from the request body
+			const { title, description, price, type_course, level, url_group, category_id } = req.body;
+
+			// Create a data object with only non-empty fields
+			const updatedData = {
+				...(title && { title }),
+				...(description && { description }),
+				...(price && { price: parseFloat(price) }),
+				...(type_course && { type_course }),
+				...(level && { level }),
+				...(url_group && { url_group }),
+				...(category_id && { category_id: parseInt(category_id) }),
+			};
+
+			const updatedCourse = await courses.update({
+				where: { id: courseId },
+				data: updatedData,
+			});
+
+			res.status(200).json({
+				success: true,
+				message: "Course updated successfully",
+				course: updatedCourse,
+			});
+		} catch (error) {
+			console.error("Error updating course: ", error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
+
+	// Delete course by Id
+	deleteCourseById: async (req, res) => {
+		try {
+			const courseId = parseInt(req.params.id);
+
+			// Check if the course with the specified ID exists
+			const existingCourse = await courses.findUnique({
+				where: {
+					id: courseId,
+				},
+			});
+
+			if (!existingCourse) {
+				return res.status(404).json({
+					success: false,
+					message: "Course not found",
+				});
+			}
+
+			// If the course exists, proceed with deletion
+			await courses.delete({
+				where: {
+					id: courseId,
+				},
+			});
+
+			res.status(200).json({
+				success: true,
+				message: "Course deleted successfully!",
+			});
+		} catch (error) {
+			console.error("Error deleting course: ", error);
+			res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
 };
