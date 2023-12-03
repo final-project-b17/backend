@@ -1,0 +1,463 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "PedjuangIlmu API",
+		"version": "1.0.0",
+		"description": "API for managing courses"
+	},
+	"servers": [
+		{
+			"url": "/api/v1/"
+		}
+	],
+	"tags": [
+		{
+			"name": "Category",
+			"description": "Categories API"
+		},
+		{
+			"name": "Course",
+			"description": "Courses API"
+		},
+		{
+			"name": "Chapter",
+			"description": "Chapters API"
+		},
+		{
+			"name": "Course Material",
+			"description": "Materials API"
+		}
+	],
+	"paths": {
+		"/courses": {
+			"get": {
+				"summary": "Get a list of courses with pagination, search, and filter",
+				"tags": ["Course"],
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"description": "Page number for pagination",
+						"schema": {
+							"type": "integer",
+							"default": 1
+						}
+					},
+					{
+						"name": "search",
+						"in": "query",
+						"description": "Search query for courses",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "rating",
+						"in": "query",
+						"description": "Minimum rating for courses",
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "price",
+						"in": "query",
+						"description": "Maximum price for courses",
+						"schema": {
+							"type": "number"
+						}
+					},
+					{
+						"name": "newlyReleased",
+						"in": "query",
+						"description": "Filter newly released courses",
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"name": "category",
+						"in": "query",
+						"description": "Category ID for filtering courses",
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "typeCourse",
+						"in": "query",
+						"description": "Type of course for filtering",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "level",
+						"in": "query",
+						"description": "Level of courses for filtering",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"status": "success",
+									"message": "Data for all courses successfully obtained!",
+									"courses": [],
+									"pagination": {
+										"currentPage": 1,
+										"pageSize": 10,
+										"totalItems": 0,
+										"totalPages": 0
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/courses/{id}": {
+			"get": {
+				"summary": "Get details of a specific course",
+				"tags": ["Course"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the course",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Success for retrieving course data",
+									"courses": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/chapters": {
+			"post": {
+				"summary": "Create a new chapter",
+				"tags": ["Chapter"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Chapter 1",
+								"course_id": 1,
+								"content": "Chapter content here"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"summary": "Get all chapters",
+				"tags": ["Chapter"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": []
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/chapters/{id}": {
+			"get": {
+				"tags": ["Chapter"],
+				"summary": "Get details of a specific chapter",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the chapter",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Chapter not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Chapter not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["Chapter"],
+				"summary": "Update a specific chapter",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the chapter",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Updated Chapter Title",
+								"content": "Updated chapter content"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Chapter"],
+				"summary": "Delete a specific chapter",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the chapter",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Chapter deleted successfully"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/categories/add-category": {
+			"post": {
+				"summary": "Create a new category",
+				"tags": ["Category"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Category Title"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Created!",
+									"categories": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories": {
+			"get": {
+				"summary": "Get list of categories",
+				"tags": ["Category"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"categories": []
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
