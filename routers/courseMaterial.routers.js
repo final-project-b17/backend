@@ -5,7 +5,7 @@ const express = require("express"),
 router.post("/create", courseMaterialcontroller.createCourseMaterials);
 router.get("/", courseMaterialcontroller.listCourseMaterials);
 router.get("/:id", courseMaterialcontroller.listCourseMaterialsId);
-router.put("/update", courseMaterialcontroller.updateCourseMaterialsId);
-router.put("/delete", courseMaterialcontroller.deleteCourseMaterialsId);
+router.put("/update/:id", courseMaterialcontroller.updateCourseMaterialsId);
+router.delete("/delete/:id", courseMaterialcontroller.deleteCourseMaterialsId);
 
 module.exports = router;
