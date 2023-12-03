@@ -10,4 +10,6 @@ module.exports = {
 	comments: prisma.Comment,
 	ratings: prisma.Rating,
 	Chapter: prisma.Chapter,
+	courseMaterials: prisma.CourseMaterial,
+
 };

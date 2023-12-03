@@ -17,6 +17,7 @@ module.exports = {
 				message: "Created!",
 				categories: data,
 			});
+      
 		} catch (error) {
 			console.log(error);
 			res.status(500).json({
@@ -35,6 +36,7 @@ module.exports = {
 				success: true,
 				categories: data,
 			});
+
 		} catch (error) {
 			console.log(error);
 			res.status(500).json({

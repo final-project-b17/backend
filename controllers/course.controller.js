@@ -1,5 +1,6 @@
 const { courses } = require("../models"),
 	utils = require("../utils");
+
 require("dotenv").config();
 
 module.exports = {
