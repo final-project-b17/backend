@@ -7,7 +7,7 @@ const secret_key = process.env.JWT_KEY || "no_secret";
 const nodemailer = require("nodemailer");
 
 module.exports = {
-	register: async (req, res) => {
+	register: async (req, res, next) => {
 		try {
 			const existingUser = await users.findUnique({
 				where: {
@@ -24,7 +24,7 @@ module.exports = {
 			const hashedPassword = await utils.cryptPassword(req.body.password);
 			const register = await users.create({
 				data: {
-					username: req.body.username, //ubah dari name ke username
+					username: req.body.username,
 					email: req.body.email,
 					password: hashedPassword,
 					role: req.body.role,
@@ -112,10 +112,10 @@ module.exports = {
 			});
 
 			const mailOptions = {
-				from: "system@gmail.com",
+				from: "reset-password@pedjualilmu.com",
 				to: req.body.email,
 				subject: "Reset Password",
-				html: `<p>Reset Password <a href="http://localhost:3000/set-password/${resetPasswordToken}">Click Here</a></p>`,
+				html: `<p>Reset Password <a href="{{url}}/set-password/${resetPasswordToken}">Click Here</a></p>`,
 			};
 
 			transporter.sendMail(mailOptions, (err) => {
