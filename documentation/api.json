@@ -26,6 +26,26 @@
 		{
 			"name": "Course Material",
 			"description": "Materials API"
+		},
+		{
+			"name": "Payment Menthod",
+			"description": "Payment Methods API"
+		},
+		{
+			"name": "Profiles",
+			"description": "User Profiles API"
+		},
+		{
+			"name": "User Progress",
+			"description": "User Progress API"
+		},
+		{
+			"name": "Order Course",
+			"description": "Orders API"
+		},
+		{
+			"name": "Authentication",
+			"description": "User Auth API"
 		}
 	],
 	"paths": {
@@ -546,6 +566,276 @@
 								"example": {
 									"success": true,
 									"message": "Chapter deleted successfully"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/course-materials": {
+			"get": {
+				"summary": "Get a list of all course materials",
+				"tags": ["Course Material"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"status": true,
+									"data": [
+										{
+											"id": 1,
+											"chapter_id": 2,
+											"course_id": 3,
+											"title": "Material Title",
+											"content": "Material Content",
+											"url_video": "https://video-url.com",
+											"createdAt": "2023-12-01T12:34:56.789Z",
+											"updatedAt": "2023-12-02T12:34:56.789Z"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/course-materials/create": {
+			"post": {
+				"summary": "Create a new course material",
+				"tags": ["Course Material"],
+				"requestBody": {
+					"description": "Data for the new course material",
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"chapter_id": 1,
+								"course_id": 1,
+								"title": "New Material Title",
+								"content": "Content of the new material",
+								"url_video": "https://example.com/video"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"chapter_id": 1,
+										"course_id": 1,
+										"title": "New Material Title",
+										"content": "Content of the new material",
+										"url_video": "https://example.com/video",
+										"createdAt": "2023-12-01T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/course-materials/{id}": {
+			"get": {
+				"summary": "Get details of a course material by ID",
+				"tags": ["Course Material"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the course material to be retrieved",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"chapter_id": 1,
+										"course_id": 1,
+										"title": "Course Material Title",
+										"content": "Course Material Content",
+										"url_video": "https://example.com/video",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-02T12:34:56.789Z",
+										"chapters": {
+											"id": 1,
+											"title": "Chapter Title"
+										},
+										"courses": {
+											"id": 1,
+											"title": "Course Title"
+										},
+										"userProgress": {}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Course Material not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Course Material not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/course-materials/update/{id}": {
+			"put": {
+				"summary": "Update course material by ID",
+				"tags": ["Course Material"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the course material to be updated",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Updated course material data",
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Updated Material Title",
+								"content": "Updated material content",
+								"url_video": "https://updated-video-url.com"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"title": "Updated Material Title",
+										"content": "Updated material content",
+										"url_video": "https://updated-video-url.com",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-02T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/course-materials/delete/{id}": {
+			"delete": {
+				"summary": "Delete course materials by ID",
+				"tags": ["Course Material"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the course materials to be deleted",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Course Materials deleted successfully"
 								}
 							}
 						}
