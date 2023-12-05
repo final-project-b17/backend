@@ -6,6 +6,7 @@ const express = require("express"),
 	chapterRouter = require("./chapter.router"),
 	materialRouter = require("./materials.router"),
 	orderRouter = require("./order.router"),
+	profileRouter = require("./user.router"),
 	ratingRouter = require("./rating.router");
 
 router.use("/auth", authRouter);
@@ -15,5 +16,6 @@ router.use("/chapters", chapterRouter);
 router.use("/course-materials", materialRouter);
 router.use("/ratings", ratingRouter);
 router.use("/orders", orderRouter);
+router.use("/profiles", profileRouter);
 
 module.exports = router;
