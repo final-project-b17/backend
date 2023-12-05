@@ -3,11 +3,14 @@ const prisma = new PrismaClient();
 
 module.exports = {
 	users: prisma.User,
+	profiles: prisma.Profile,
+	categories: prisma.category,
 	courses: prisma.Course,
 	orders: prisma.Order,
-	groups: prisma.Group,
-	memberships: prisma.Membership,
 	videos: prisma.Video,
 	comments: prisma.Comment,
 	ratings: prisma.Rating,
+	Chapter: prisma.Chapter,
+	courseMaterials: prisma.CourseMaterial,
+	paymentMethods: prisma.paymentMethod,
 };
