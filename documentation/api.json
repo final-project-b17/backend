@@ -5,12 +5,29 @@
 		"version": "1.0.0",
 		"description": "API for managing courses"
 	},
+	"components": {
+		"securitySchemes": {
+			"BearerAuth": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header"
+			}
+		}
+	},
 	"servers": [
 		{
 			"url": "/api/v1/"
 		}
 	],
 	"tags": [
+		{
+			"name": "Authentication",
+			"description": "User Auth API"
+		},
+		{
+			"name": "Profiles",
+			"description": "User Profiles API"
+		},
 		{
 			"name": "Category",
 			"description": "Categories API"
@@ -32,20 +49,12 @@
 			"description": "Payment Methods API"
 		},
 		{
-			"name": "Profiles",
-			"description": "User Profiles API"
-		},
-		{
 			"name": "User Progress",
 			"description": "User Progress API"
 		},
 		{
 			"name": "Order Course",
 			"description": "Orders API"
-		},
-		{
-			"name": "Authentication",
-			"description": "User Auth API"
 		}
 	],
 	"paths": {
@@ -908,6 +917,536 @@
 									"success": true,
 									"message": "Created!",
 									"categories": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/auth/register": {
+			"post": {
+				"summary": "Register a new user",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"example": {
+								"username": "john_doe",
+								"email": "john.doe@example.com",
+								"password": "securepassword",
+								"role": "user",
+								"profile": {
+									"name": "John Doe",
+									"no_telp": "1234567890",
+									"avatar": "https://example.com/avatar.jpg",
+									"city": "City",
+									"country": "Country"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "User registered successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"user": {
+										"id": 1,
+										"username": "john_doe",
+										"email": "john.doe@example.com",
+										"role": "user",
+										"is_verified": false,
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									},
+									"profile": {
+										"id": 1,
+										"user_id": 1,
+										"name": "John Doe",
+										"no_telp": "1234567890",
+										"avatar": "https://example.com/avatar.jpg",
+										"city": "City",
+										"country": "Country",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									},
+									"message": "Registered Successful. Email verification sent."
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"summary": "Login",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"example": {
+								"email": "john.doe@example.com",
+								"password": "securepassword"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful login",
+						"content": {
+							"application/json": {
+								"example": {
+									"data": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjM4ODM0MjA2LCJleHAiOjE2Mzg4MzcyMDZ9.-jPwHzoJ7QqhzrcOrskJzHGqIYiCpALFk7G3AdUupJc"
+									}
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid Credentials",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Invalid Credentials"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Email not registered",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Your email is not registered in our system"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/reset-password": {
+			"post": {
+				"summary": "Request password reset",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"example": {
+								"email": "john.doe@example.com"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Password reset link sent successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"successMessage": "Password reset link was sent to your email!"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "User not found!"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "An error occurred"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/set-password": {
+			"post": {
+				"summary": "Set new password after reset",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"example": {
+								"key": "reset_key_token",
+								"password": "newpassword"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Password reset successful",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"successMessage": "Password reset was successful!"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid or expired reset key",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "Invalid or expired reset key!"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "An error occurred"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/verify-email": {
+			"post": {
+				"summary": "Verify user email",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"example": {
+								"email": "john.doe@example.com",
+								"otp": "123456"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Email verification successful",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"successMessage": "Email verification successful"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid OTP",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "Invalid OTP"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "An error occurred during email verification"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/resend-otp": {
+			"post": {
+				"summary": "Resend email verification OTP",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"example": {
+								"email": "john.doe@example.com"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "New OTP sent successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"successMessage": "New OTP sent successfully"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "User not found or email is already verified",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "User not found or email is already verified"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Failed to resend OTP",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": true,
+									"errorMessage": "Failed to resend OTP"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/profiles/my-profile": {
+			"get": {
+				"summary": "Get user profile",
+				"tags": ["Profiles"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User profile fetched successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"id": 1,
+									"user_id": 1,
+									"name": "John Doe",
+									"no_telp": "1234567890",
+									"avatar": "https://example.com/avatar.jpg",
+									"city": "City",
+									"country": "Country",
+									"createdAt": "2023-12-01T12:34:56.789Z",
+									"updatedAt": "2023-12-01T12:34:56.789Z",
+									"user": {
+										"id": 1,
+										"username": "john_doe",
+										"email": "john.doe@example.com",
+										"role": "user",
+										"is_verified": true,
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "User not found!"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/update-profile": {
+			"put": {
+				"summary": "Update user profile",
+				"tags": ["Profiles"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"name": "John Doe",
+								"no_telp": "1234567890",
+								"avatar": "https://example.com/avatar.jpg",
+								"city": "City",
+								"country": "Country"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Profile updated successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"id": 1,
+									"user_id": 1,
+									"name": "John Doe",
+									"no_telp": "1234567890",
+									"avatar": "https://example.com/avatar.jpg",
+									"city": "City",
+									"country": "Country",
+									"createdAt": "2023-12-01T12:34:56.789Z",
+									"updatedAt": "2023-12-01T12:34:56.789Z",
+									"user": {
+										"id": 1,
+										"username": "john_doe",
+										"email": "john.doe@example.com",
+										"role": "user",
+										"is_verified": true,
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/update-password": {
+			"put": {
+				"summary": "Update user password",
+				"tags": ["Profiles"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"currentPassword": "current_password",
+								"newPassword": "new_password"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Password updated successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Password updated successfully"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "User not found"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid current password",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Invalid current password"
 								}
 							}
 						}
