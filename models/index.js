@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 module.exports = {
 	users: prisma.User,
+	profiles: prisma.Profile,
 	categories: prisma.category,
 	courses: prisma.Course,
 	orders: prisma.Order,
