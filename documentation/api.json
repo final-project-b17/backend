@@ -935,6 +935,158 @@
 				}
 			}
 		},
+		"/categories/detail/{id}": {
+			"get": {
+				"summary": "Get details of a category by ID",
+				"tags": ["Category"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID of the category"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Category details retrieved successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"categories": {
+										"id": 1,
+										"title": "Category Title"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Category not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/update/{id}": {
+			"put": {
+				"summary": "Update category by ID",
+				"tags": ["Category"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID of the category"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"title": "Updated Category Title"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Category updated successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"title": "Updated Category Title",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/delete/{id}": {
+			"delete": {
+				"summary": "Delete category by ID",
+				"tags": ["Category"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID of the category"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Category deleted successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Category deleted successfully"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 
 		"/auth/register": {
 			"post": {
