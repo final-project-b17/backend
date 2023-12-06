@@ -1,10 +1,11 @@
 const express = require("express"),
 	router = express.Router(),
-	controller = require("../controllers/user.controller");
+	userController = require("../controllers/user.controller");
 const authenticateUser = require("../middlewares/authentication");
 
-router.get("/my-profile", authenticateUser, controller.getMyProfile);
-router.put("/update-profile", authenticateUser, controller.updateMyProfile);
-router.put("/update-password", authenticateUser, controller.updateMyPassword);
+router.get("/my-profile", authenticateUser, userController.getMyProfile);
+router.get("/my-course", authenticateUser, userController.getMyCourseHistory);
+router.put("/update-profile", authenticateUser, userController.updateMyProfile);
+router.put("/update-password", authenticateUser, userController.updateMyPassword);
 
 module.exports = router;
