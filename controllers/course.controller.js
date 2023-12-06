@@ -1,6 +1,8 @@
 const { courses } = require("../models"),
 	utils = require("../utils");
 
+const { ImageKit } = require("../utils");
+
 require("dotenv").config();
 
 module.exports = {
@@ -130,23 +132,52 @@ module.exports = {
 			// 		message: "Permission denied. Only admins can create courses.",
 			// 	});
 			// }
-
 			// Validate and create the new course
-			const createdCourse = await courses.create({
-				data: {
-					title: req.body.title,
-					description: req.body.description,
-					price: parseFloat(req.body.price),
-					type_course: req.body.type_course,
-					level: req.body.level,
-					url_group: req.body.url_group,
-					category_id: parseInt(req.body.category_id),
-				},
-			});
+			// const createdCourse = await courses.create({
+			// 	data: {
+			// 		title: req.body.title,
+			// 		description: req.body.description,
+			// 		price: parseFloat(req.body.price),
+			// 		type_course: req.body.type_course,
+			// 		level: req.body.level,
+			// 		url_group: req.body.url_group,
+			// 		// thumbnail: uploadFile.url,
+			// 		category_id: parseInt(req.body.category_id),
+			// 	},
+			// });
+			const { title, description, price, type_course, level, url_group, category_id } = req.body;
 
+			const newCourseData = {
+				title,
+				description,
+				price: parseFloat(price),
+				type_course,
+				level,
+				url_group,
+				category_id: parseInt(category_id),
+			};
+	
+			if (req.file) {
+				const fileToString = req.file.buffer.toString('base64');
+				const currentDate = new Date();
+				const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); // Get current date in YYYYMMDD format
+				const fileName = `thumbnail_${formattedDate}`;
+
+				const uploadFile = await ImageKit.upload({
+					fileName: fileName,
+					file: fileToString,
+				});
+
+				newCourseData.thumbnail = uploadFile.url;
+			}
+	
+			const createdCourse = await courses.create({
+				data: newCourseData,
+			});
+	
 			res.status(201).json({
 				success: true,
-				message: "Course created successfully!",
+				message: "Course created successfully",
 				course: createdCourse,
 			});
 		} catch (error) {
@@ -176,6 +207,20 @@ module.exports = {
 				...(url_group && { url_group }),
 				...(category_id && { category_id: parseInt(category_id) }),
 			};
+
+			if (req.file) {
+				const fileToString = req.file.buffer.toString('base64');
+				const currentDate = new Date();
+				const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); // Get current date in YYYYMMDD format
+				const fileName = `thumbnail_${formattedDate}`;
+	
+				const uploadFile = await ImageKit.upload({
+					fileName: fileName,
+					file: fileToString,
+				});
+	
+				updatedData.thumbnail = uploadFile.url;
+			}
 
 			const updatedCourse = await courses.update({
 				where: { id: courseId },
