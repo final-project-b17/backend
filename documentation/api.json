@@ -45,7 +45,7 @@
 			"description": "Materials API"
 		},
 		{
-			"name": "Payment Menthod",
+			"name": "Payment Method",
 			"description": "Payment Methods API"
 		},
 		{
@@ -1609,6 +1609,142 @@
 							"application/json": {
 								"example": {
 									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/my-course": {
+			"get": {
+				"summary": "Get course enrollment history for the logged-in user",
+				"tags": ["Profiles"],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Course enrollment history retrieved successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"courseHistory": [
+										{
+											"id": 1,
+											"user_id": 123,
+											"course_id": 456,
+											"order_date": "2023-12-01T12:34:56.789Z",
+											"status": "completed",
+											"course": {
+												"id": 456,
+												"title": "Course Title",
+												"description": "Course Description",
+												"price": 29.99,
+												"type_course": "video",
+												"level": "beginner",
+												"url_group": "https://example.com/course-group",
+												"category_id": 789,
+												"createdAt": "2023-12-01T12:34:56.789Z",
+												"updatedAt": "2023-12-01T12:34:56.789Z"
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/orders": {
+			"post": {
+				"summary": "Create a new order",
+				"tags": ["Orders"],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"course_id": 1,
+								"user_id": 1,
+								"payment_method_id": 1
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Order created successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"order": {
+										"id": 1,
+										"status": "paid",
+										"reference": "ORDER_123456789",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z",
+										"user": {
+											"id": 1,
+											"email": "user@example.com",
+											"createdAt": "2023-12-01T12:34:56.789Z",
+											"updatedAt": "2023-12-01T12:34:56.789Z"
+										}
+									},
+									"message": "Free course order created successfully",
+									"paymentLink": "https://example.com/payment-link",
+									"callbackUrl": "https://example.com/callback-url"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "User has already purchased this course",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": "User has already purchased this course"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Course not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": "Course not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
 									"error": "Internal Server Error"
 								}
 							}

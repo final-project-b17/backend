@@ -1,4 +1,4 @@
-const { users, profiles } = require("../models");
+const { users, profiles, orders } = require("../models");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
@@ -27,6 +27,35 @@ module.exports = {
 			return res.status(200).json(userProfile);
 		} catch (error) {
 			console.error("Error fetching user profile:", error);
+			return res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
+
+	// Get my course enrollment history
+	getMyCourseHistory: async (req, res) => {
+		const userId = req.user.id;
+
+		try {
+			// Assuming you have a model for course enrollments with a user_id foreign key
+			const courseHistory = await orders.findMany({
+				where: {
+					user_id: userId,
+				},
+				include: {
+					// Include any additional information you want from the courses
+					course: true,
+				},
+			});
+
+			return res.status(200).json({
+				success: true,
+				courseHistory,
+			});
+		} catch (error) {
+			console.error("Error fetching user course history:", error);
 			return res.status(500).json({
 				success: false,
 				error: "Internal Server Error",

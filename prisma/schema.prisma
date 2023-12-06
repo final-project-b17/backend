@@ -28,6 +28,7 @@ enum UserRole {
 
 enum StatusPayment {
   unpaid
+  pending
   paid
 }
 
@@ -35,7 +36,7 @@ model Course {
   id            Int       @id @default(autoincrement())
   title         String
   description   String
-  price         Float
+  price         Float?
   type_course   TypeCourse
   level         LevelCourse
   url_group     String
@@ -158,7 +159,7 @@ model UserCourseProgress {
   course_id           Int
   chapter_id          Int
   course_material_id  Int
-  completed_at        DateTime
+  completed_at        DateTime @default(now())
   users               User      @relation(fields: [user_id], references: [id])
   courses             Course    @relation(fields: [course_id], references: [id])
   chapters            Chapter   @relation(fields: [chapter_id], references: [id])
