@@ -6,11 +6,10 @@ const express = require("express"),
 	chapterRouter = require("./chapter.router"),
 	materialRouter = require("./materials.router"),
 	ratingRouter = require("./rating.router"),
-	paymentMethodRouter = require("./paymentMethod.router");
+	paymentMethodRouter = require("./paymentMethod.router"),
 	orderRouter = require("./order.router"),
 	profileRouter = require("./user.router"),
-	progressRouter = require("./progress.router"),
-	ratingRouter = require("./rating.router");
+	progressRouter = require("./progress.router");
 
 router.use("/auth", authRouter);
 router.use("/categories", categoryRouter);
