@@ -112,7 +112,7 @@
 					{
 						"name": "typeCourse",
 						"in": "query",
-						"description": "Filter courses by type (e.g., free, premium)",
+						"description": "Filter courses by type: free, premium",
 						"required": false,
 						"schema": {
 							"type": "string"
@@ -121,7 +121,7 @@
 					{
 						"name": "level",
 						"in": "query",
-						"description": "Filter courses by level (e.g., beginner, intermediate)",
+						"description": "Filter courses by level: pemula, menengah, lanjutan (multiple values can be separated by commas)",
 						"required": false,
 						"schema": {
 							"type": "string"

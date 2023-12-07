@@ -44,6 +44,14 @@ module.exports = {
 				  }
 				: {};
 
+			const levelFilter = req.query.level
+				? {
+						level: {
+							in: req.query.level.split(","),
+						},
+				  }
+				: {};
+
 			const filterOptions = {
 				where: {
 					...searchFilter,
@@ -51,7 +59,7 @@ module.exports = {
 					price: req.query.price ? { lte: req.query.price } : undefined,
 					createdAt: req.query.newlyReleased ? { gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) } : undefined,
 					type_course: req.query.typeCourse || undefined,
-					level: req.query.level || undefined,
+					...levelFilter,
 					...categoryFilter,
 				},
 				// Sort by newly created courses
