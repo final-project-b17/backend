@@ -1,14 +1,27 @@
 const { categories } = require("../models"),
 	utils = require("../utils");
+
+const { ImageKit } = require("../utils");
+
 require("dotenv").config();
 
 module.exports = {
 	// Add category
 	createCategory: async (req, res) => {
 		try {
+			const fileToString = req.file.buffer.toString('base64');
+			const currentDate = new Date();
+			const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); 
+			const fileName = `thumbnail_${formattedDate}`;
+
+			const uploadFile = await ImageKit.upload({
+				fileName: fileName,
+				file: fileToString,
+			});
 			const data = await categories.create({
 				data: {
 					title: req.body.title,
+					thumbnail: uploadFile.url
 				},
 			});
 
@@ -78,13 +91,52 @@ module.exports = {
 	updateCategory: async (req, res) => {
 		try {
 			const categoryId = parseInt(req.params.id);
+
+			const readCategory = await categories.findUnique({
+				where: {
+				  id: categoryId,
+				},
+			  });
+		  
+			  if (!readCategory) {
+				return res.status(404).json({
+				  success: false,
+				  error: "Category not found",
+				});
+			  }
+		  
+			  let updatedData = {};
+		  
+			  if (req.body.title) {
+				updatedData.title = req.body.title;
+			  }
+		  
+			  if (req.file) {
+				const fileToString = req.file.buffer.toString('base64');
+				const currentDate = new Date();
+				const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); 
+				const fileName = `thumbnail_${formattedDate}`;
+	  
+				const uploadFile = await ImageKit.upload({
+					fileName: fileName,
+					file: fileToString,
+				});
+		  
+				updatedData.thumbnail = uploadFile.url;
+			  }
+		  
+			  if (Object.keys(updatedData).length === 0) {
+				return res.json({
+				  success: true,
+				  message: "No changes provided for update.",
+				});
+			  }
+
 			const updateCategory = await categories.update({
 				where: {
 					id: categoryId,
 				},
-				data: {
-					title: req.body.title,
-				},
+				data: updatedData
 			});
 
 			res.json({
