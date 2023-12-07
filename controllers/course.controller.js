@@ -6,7 +6,7 @@ const { ImageKit } = require("../utils");
 require("dotenv").config();
 
 module.exports = {
-	// Display all courses with pagination, search, filter
+	// Display all courses with pagination, search, and multiple filter
 	listCourse: async (req, res) => {
 		try {
 			// Set pagination
@@ -36,21 +36,36 @@ module.exports = {
 				: {};
 
 			// Set filter by rating, price, release date, category, type, and level courses
+			const categoryFilter = req.query.category
+				? {
+						category_id: {
+							in: req.query.category.split(",").map((id) => parseInt(id)),
+						},
+				  }
+				: {};
+
 			const filterOptions = {
 				where: {
 					...searchFilter,
 					rating: req.query.rating ? { gte: req.query.rating } : undefined,
 					price: req.query.price ? { lte: req.query.price } : undefined,
 					createdAt: req.query.newlyReleased ? { gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) } : undefined,
-					category_id: req.query.category ? parseInt(req.query.category) : undefined,
 					type_course: req.query.typeCourse || undefined,
 					level: req.query.level || undefined,
+					...categoryFilter,
 				},
 				// Sort by newly created courses
 				orderBy: { createdAt: "desc" },
 				skip: skip,
 				take: pageSize,
-				include: { chapters: true, materials: true, orders: true, comments: true, ratings: true, userProgress: true },
+				include: {
+					chapters: true,
+					materials: true,
+					orders: true,
+					comments: true,
+					ratings: true,
+					userProgress: true,
+				},
 			};
 
 			const coursesData = await courses.findMany(filterOptions);
@@ -125,26 +140,6 @@ module.exports = {
 	// Adding new course
 	createCourse: async (req, res) => {
 		try {
-			// Check if the user has admin role
-			// if (req.userRole !== "admin") {
-			// 	return res.status(403).json({
-			// 		success: false,
-			// 		message: "Permission denied. Only admins can create courses.",
-			// 	});
-			// }
-			// Validate and create the new course
-			// const createdCourse = await courses.create({
-			// 	data: {
-			// 		title: req.body.title,
-			// 		description: req.body.description,
-			// 		price: parseFloat(req.body.price),
-			// 		type_course: req.body.type_course,
-			// 		level: req.body.level,
-			// 		url_group: req.body.url_group,
-			// 		// thumbnail: uploadFile.url,
-			// 		category_id: parseInt(req.body.category_id),
-			// 	},
-			// });
 			const { title, description, price, type_course, level, url_group, category_id } = req.body;
 
 			const newCourseData = {
@@ -156,11 +151,11 @@ module.exports = {
 				url_group,
 				category_id: parseInt(category_id),
 			};
-	
+
 			if (req.file) {
-				const fileToString = req.file.buffer.toString('base64');
+				const fileToString = req.file.buffer.toString("base64");
 				const currentDate = new Date();
-				const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); // Get current date in YYYYMMDD format
+				const formattedDate = currentDate.toISOString().split("T")[0].replace(/-/g, ""); // Get current date in YYYYMMDD format
 				const fileName = `thumbnail_${formattedDate}`;
 
 				const uploadFile = await ImageKit.upload({
@@ -170,11 +165,11 @@ module.exports = {
 
 				newCourseData.thumbnail = uploadFile.url;
 			}
-	
+
 			const createdCourse = await courses.create({
 				data: newCourseData,
 			});
-	
+
 			res.status(201).json({
 				success: true,
 				message: "Course created successfully",
@@ -209,16 +204,16 @@ module.exports = {
 			};
 
 			if (req.file) {
-				const fileToString = req.file.buffer.toString('base64');
+				const fileToString = req.file.buffer.toString("base64");
 				const currentDate = new Date();
-				const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); // Get current date in YYYYMMDD format
+				const formattedDate = currentDate.toISOString().split("T")[0].replace(/-/g, ""); // Get current date in YYYYMMDD format
 				const fileName = `thumbnail_${formattedDate}`;
-	
+
 				const uploadFile = await ImageKit.upload({
 					fileName: fileName,
 					file: fileToString,
 				});
-	
+
 				updatedData.thumbnail = uploadFile.url;
 			}
 

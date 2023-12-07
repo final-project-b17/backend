@@ -60,13 +60,14 @@
 	"paths": {
 		"/courses": {
 			"get": {
-				"summary": "Get a list of courses with pagination, search, and filter",
+				"summary": "List all courses with pagination, search, and multiple filters",
 				"tags": ["Course"],
 				"parameters": [
 					{
 						"name": "page",
 						"in": "query",
 						"description": "Page number for pagination",
+						"required": false,
 						"schema": {
 							"type": "integer",
 							"default": 1
@@ -75,7 +76,8 @@
 					{
 						"name": "search",
 						"in": "query",
-						"description": "Search query for courses",
+						"description": "Search query string",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
@@ -84,14 +86,16 @@
 						"name": "rating",
 						"in": "query",
 						"description": "Minimum rating for courses",
+						"required": false,
 						"schema": {
-							"type": "integer"
+							"type": "number"
 						}
 					},
 					{
 						"name": "price",
 						"in": "query",
 						"description": "Maximum price for courses",
+						"required": false,
 						"schema": {
 							"type": "number"
 						}
@@ -99,23 +103,17 @@
 					{
 						"name": "newlyReleased",
 						"in": "query",
-						"description": "Filter newly released courses",
+						"description": "Filter newly released courses within the last 7 days",
+						"required": false,
 						"schema": {
 							"type": "boolean"
 						}
 					},
 					{
-						"name": "category",
-						"in": "query",
-						"description": "Category ID for filtering courses",
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
 						"name": "typeCourse",
 						"in": "query",
-						"description": "Type of course for filtering",
+						"description": "Filter courses by type (e.g., free, premium)",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
@@ -123,7 +121,17 @@
 					{
 						"name": "level",
 						"in": "query",
-						"description": "Level of courses for filtering",
+						"description": "Filter courses by level (e.g., beginner, intermediate)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "category",
+						"in": "query",
+						"description": "Filter courses by category (multiple values can be separated by commas)",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
@@ -131,19 +139,44 @@
 				],
 				"responses": {
 					"200": {
-						"description": "Successful response",
+						"description": "Courses retrieved successfully",
 						"content": {
 							"application/json": {
 								"example": {
 									"status": "success",
 									"message": "Data for all courses successfully obtained!",
-									"courses": [],
+									"courses": [
+										{
+											"id": 1,
+											"title": "Sample Course 1",
+											"description": "This is a sample course.",
+											"price": 29.99,
+											"type_course": "premium",
+											"level": "beginner",
+											"url_group": "https://example.com/group",
+											"category_id": 1,
+											"thumbnail": "https://example.com/thumbnail.jpg",
+											"createdAt": "2023-12-01T12:34:56.789Z",
+											"updatedAt": "2023-12-01T12:34:56.789Z"
+										}
+									],
 									"pagination": {
 										"currentPage": 1,
 										"pageSize": 10,
-										"totalItems": 0,
-										"totalPages": 0
+										"totalItems": 100,
+										"totalPages": 10
 									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No courses found with the specified criteria",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "No courses found with the specified criteria"
 								}
 							}
 						}
@@ -169,28 +202,62 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Course Title",
-								"description": "Description of course",
-								"price": 200000,
-								"type_course": "free",
-								"level": "pemula",
-								"url_group": "www.discord.com/backend2",
-								"category_id": 2
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string"
+									},
+									"description": {
+										"type": "string"
+									},
+									"price": {
+										"type": "number"
+									},
+									"type_course": {
+										"type": "string"
+									},
+									"level": {
+										"type": "string"
+									},
+									"url_group": {
+										"type": "string"
+									},
+									"category_id": {
+										"type": "integer"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary"
+									}
+								},
+								"required": ["title", "description", "price", "type_course", "level", "url_group", "category_id"]
 							}
 						}
 					}
 				},
 				"responses": {
-					"200": {
-						"description": "Successful response",
+					"201": {
+						"description": "Course created successfully",
 						"content": {
 							"application/json": {
 								"example": {
 									"success": true,
-									"message": "Created!",
-									"categories": {}
+									"message": "Course created successfully",
+									"course": {
+										"id": 1,
+										"title": "Sample Course",
+										"description": "This is a sample course.",
+										"price": 29.99,
+										"type_course": "premium",
+										"level": "beginner",
+										"url_group": "https://example.com/group",
+										"category_id": 1,
+										"thumbnail": "https://example.com/thumbnail.jpg",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
 								}
 							}
 						}
