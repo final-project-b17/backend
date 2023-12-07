@@ -9,9 +9,9 @@ module.exports = {
 	// Add category
 	createCategory: async (req, res) => {
 		try {
-			const fileToString = req.file.buffer.toString('base64');
+			const fileToString = req.file.buffer.toString("base64");
 			const currentDate = new Date();
-			const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); 
+			const formattedDate = currentDate.toISOString().split("T")[0].replace(/-/g, "");
 			const fileName = `thumbnail_${formattedDate}`;
 
 			const uploadFile = await ImageKit.upload({
@@ -21,7 +21,7 @@ module.exports = {
 			const data = await categories.create({
 				data: {
 					title: req.body.title,
-					thumbnail: uploadFile.url
+					thumbnail: uploadFile.url,
 				},
 			});
 
@@ -42,11 +42,11 @@ module.exports = {
 	// Display list category
 	listCategories: async (req, res) => {
 		try {
-			const data = await categories.findMany();
+			const category = await categories.findMany();
 
 			res.status(200).json({
 				success: true,
-				categories: data,
+				categories: category,
 			});
 		} catch (error) {
 			console.log(error);
@@ -94,49 +94,49 @@ module.exports = {
 
 			const readCategory = await categories.findUnique({
 				where: {
-				  id: categoryId,
+					id: categoryId,
 				},
-			  });
-		  
-			  if (!readCategory) {
+			});
+
+			if (!readCategory) {
 				return res.status(404).json({
-				  success: false,
-				  error: "Category not found",
+					success: false,
+					error: "Category not found",
 				});
-			  }
-		  
-			  let updatedData = {};
-		  
-			  if (req.body.title) {
+			}
+
+			let updatedData = {};
+
+			if (req.body.title) {
 				updatedData.title = req.body.title;
-			  }
-		  
-			  if (req.file) {
-				const fileToString = req.file.buffer.toString('base64');
+			}
+
+			if (req.file) {
+				const fileToString = req.file.buffer.toString("base64");
 				const currentDate = new Date();
-				const formattedDate = currentDate.toISOString().split('T')[0].replace(/-/g, ''); 
+				const formattedDate = currentDate.toISOString().split("T")[0].replace(/-/g, "");
 				const fileName = `thumbnail_${formattedDate}`;
-	  
+
 				const uploadFile = await ImageKit.upload({
 					fileName: fileName,
 					file: fileToString,
 				});
-		  
+
 				updatedData.thumbnail = uploadFile.url;
-			  }
-		  
-			  if (Object.keys(updatedData).length === 0) {
+			}
+
+			if (Object.keys(updatedData).length === 0) {
 				return res.json({
-				  success: true,
-				  message: "No changes provided for update.",
+					success: true,
+					message: "No changes provided for update.",
 				});
-			  }
+			}
 
 			const updateCategory = await categories.update({
 				where: {
 					id: categoryId,
 				},
-				data: updatedData
+				data: updatedData,
 			});
 
 			res.json({

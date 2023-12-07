@@ -996,22 +996,40 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Category Title"
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string",
+										"description": "Title of the category"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary",
+										"description": "Thumbnail image file"
+									}
+								},
+								"required": ["title", "thumbnail"]
 							}
 						}
 					}
 				},
 				"responses": {
-					"200": {
-						"description": "Successful response",
+					"201": {
+						"description": "Category created successfully",
 						"content": {
 							"application/json": {
 								"example": {
 									"success": true,
-									"message": "Created!",
-									"categories": {}
+									"message": "Category created successfully",
+									"category": {
+										"id": 1,
+										"title": "New Category",
+										"thumbnail": "https://example.com/new-category-thumbnail.jpg",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
 								}
 							}
 						}
@@ -1091,21 +1109,32 @@
 				"tags": ["Category"],
 				"parameters": [
 					{
-						"in": "path",
 						"name": "id",
+						"in": "path",
+						"description": "ID of the category to update",
 						"required": true,
 						"schema": {
 							"type": "integer"
-						},
-						"description": "ID of the category"
+						}
 					}
 				],
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Updated Category Title"
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string",
+										"description": "Updated title of the category"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary",
+										"description": "Updated thumbnail image file"
+									}
+								}
 							}
 						}
 					}
@@ -1117,11 +1146,13 @@
 							"application/json": {
 								"example": {
 									"success": true,
-									"data": {
+									"message": "Category updated successfully",
+									"category": {
 										"id": 1,
-										"title": "Updated Category Title",
+										"title": "Updated Category",
+										"thumbnail": "https://example.com/updated-category-thumbnail.jpg",
 										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-01T12:34:56.789Z"
+										"updatedAt": "2023-12-02T12:34:56.789Z"
 									}
 								}
 							}
