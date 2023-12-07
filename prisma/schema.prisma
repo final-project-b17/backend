@@ -76,9 +76,10 @@ model CourseMaterial {
 }
 
 model Category {
-  id      Int      @id @default(autoincrement())
-  title   String
-  courses Course[]
+  id        Int      @id @default(autoincrement())
+  title     String
+  thumbnail String?
+  courses   Course[]
 }
 
 model User {
