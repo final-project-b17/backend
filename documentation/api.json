@@ -320,40 +320,67 @@
 		},
 		"/courses/update/{id}": {
 			"put": {
-				"summary": "Update a course by ID",
+				"summary": "Update course by ID",
 				"tags": ["Course"],
 				"parameters": [
 					{
 						"name": "id",
 						"in": "path",
-						"description": "ID of the course to be updated",
+						"description": "ID of the course to update",
 						"required": true,
 						"schema": {
-							"type": "integer",
-							"format": "int64"
+							"type": "integer"
 						}
 					}
 				],
 				"requestBody": {
-					"description": "Updated course data",
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Updated Title",
-								"description": "Updated Description",
-								"price": 29.99,
-								"type_course": "premium",
-								"level": "lanjutan",
-								"url_group": "https://updated-url.com",
-								"category_id": 1
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string",
+										"description": "Title of the course"
+									},
+									"description": {
+										"type": "string",
+										"description": "Description of the course"
+									},
+									"price": {
+										"type": "number",
+										"description": "Price of the course"
+									},
+									"type_course": {
+										"type": "string",
+										"description": "Type of the course (e.g., free, premium)"
+									},
+									"level": {
+										"type": "string",
+										"description": "Level of the course (e.g., beginner, intermediate)"
+									},
+									"url_group": {
+										"type": "string",
+										"description": "URL of the course group"
+									},
+									"category_id": {
+										"type": "integer",
+										"description": "ID of the course category"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary",
+										"description": "Thumbnail image file"
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "Successful response",
+						"description": "Course updated successfully",
 						"content": {
 							"application/json": {
 								"example": {
@@ -361,15 +388,16 @@
 									"message": "Course updated successfully",
 									"course": {
 										"id": 1,
-										"title": "Updated Title",
-										"description": "Updated Description",
-										"price": 29.99,
+										"title": "Updated Course",
+										"description": "This course has been updated.",
+										"price": 39.99,
 										"type_course": "premium",
-										"level": "advanced",
-										"url_group": "https://updated-url.com",
+										"level": "intermediate",
+										"url_group": "https://example.com/updated-group",
+										"category_id": 2,
+										"thumbnail": "https://example.com/updated-thumbnail.jpg",
 										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-02T12:34:56.789Z",
-										"category_id": 1
+										"updatedAt": "2023-12-02T12:34:56.789Z"
 									}
 								}
 							}
