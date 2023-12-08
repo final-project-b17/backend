@@ -85,6 +85,7 @@ module.exports = {
 
 			// Send email with OTP
 			const transporter = nodemailer.createTransport({
+				service: "gmail",
 				host: process.env.EMAIL_HOST,
 				port: process.env.EMAIL_PORT,
 				secure: false,
@@ -204,6 +205,7 @@ module.exports = {
 			});
 
 			const transporter = nodemailer.createTransport({
+				service: "gmail",
 				host: process.env.EMAIL_HOST,
 				port: process.env.EMAIL_PORT,
 				secure: false,
@@ -217,7 +219,7 @@ module.exports = {
 				from: "reset-password@pedjuangilmu.up.railway.app",
 				to: req.body.email,
 				subject: "Reset Password",
-				html: `<p>Reset Password <a href="{{url}}/set-password/${resetPasswordToken}">Click Here</a></p>`,
+				html: `<p>Reset Password <a href="/api/v1/set-password/${resetPasswordToken}">Click Here</a></p>`,
 			};
 
 			transporter.sendMail(mailOptions, (err) => {
@@ -360,6 +362,7 @@ module.exports = {
 
 			// Send email with the new OTP
 			const transporter = nodemailer.createTransport({
+				service: "gmail",
 				host: process.env.EMAIL_HOST,
 				port: process.env.EMAIL_PORT,
 				secure: false,
