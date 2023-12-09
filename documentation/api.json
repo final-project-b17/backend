@@ -647,7 +647,7 @@
 				}
 			}
 		},
-		"/chapters/delete{id}": {
+		"/chapters/delete/{id}": {
 			"delete": {
 				"tags": ["Chapter"],
 				"summary": "Delete a specific chapter",
