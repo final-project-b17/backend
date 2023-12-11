@@ -47,6 +47,7 @@ model Course {
   Category     Category             @relation(fields: [category_id], references: [id])
   chapters     Chapter[]
   materials    CourseMaterial[]
+  enrollments  Enrollment[]
   orders       Order[]
   comments     Comment[]
   ratings      Rating[]
@@ -94,6 +95,7 @@ model User {
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   orders             Order[]
+  enrollments  Enrollment[]
   profile            Profile?
   comments           Comment[]
   ratings            Rating[]
@@ -111,18 +113,28 @@ model Profile {
   user    User   @relation(fields: [user_id], references: [id])
 }
 
+model Enrollment {
+  id           Int      @id @default(autoincrement())
+  user_id      Int      
+  course_id    Int      
+  enrolled_at  DateTime @default(now())
+  completed_at DateTime?
+  is_completed Boolean  @default(false)
+  users        User     @relation(fields: [user_id], references: [id])
+  courses      Course   @relation(fields: [course_id], references: [id])
+}
+
 model Order {
   id                 Int           @id @default(autoincrement())
   course_id          Int
   user_id            Int
-  payment_methods_id Int
+  payment_methods_id Int?
   status             StatusPayment @default(unpaid)
   reference          String
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   course             Course        @relation(fields: [course_id], references: [id])
   user               User          @relation(fields: [user_id], references: [id])
-  payment_method     PaymentMethod @relation(fields: [payment_methods_id], references: [id])
 }
 
 model PaymentMethod {
@@ -130,7 +142,6 @@ model PaymentMethod {
   name      String
   logo      String
   is_active Boolean @default(true)
-  orders    Order[]
 }
 
 model Comment {
@@ -162,7 +173,7 @@ model UserCourseProgress {
   chapter_id         Int
   course_material_id Int
   is_completed       Boolean        @default(false)
-  completed_at       DateTime       @default(now())
+  completed_at       DateTime?
   users              User           @relation(fields: [user_id], references: [id])
   courses            Course         @relation(fields: [course_id], references: [id])
   chapters           Chapter        @relation(fields: [chapter_id], references: [id])
