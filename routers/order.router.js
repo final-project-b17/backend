@@ -4,6 +4,6 @@ const authenticateUser = require("../middlewares/authentication");
 const router = express.Router();
 
 // POST /orders
-router.post("/", authenticateUser, orderController.createOrder);
+router.post("/create", authenticateUser, orderController.createOrder);
 
 module.exports = router;

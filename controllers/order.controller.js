@@ -9,13 +9,14 @@ const xenditApiUrl = "https://api.xendit.co/v2/invoices";
 module.exports = {
 	createOrder: async (req, res) => {
 		try {
-			const { course_id, user_id, payment_method_id } = req.body;
+			const userId = req.user.id;
+			const { course_id } = req.body;
 
 			// Check if the user has already purchased the course
 			const existingOrder = await prisma.order.findFirst({
 				where: {
 					course_id: parseInt(course_id),
-					user_id: parseInt(user_id),
+					user_id: parseInt(userId),
 					status: "paid",
 				},
 			});
@@ -48,12 +49,7 @@ module.exports = {
 						},
 						user: {
 							connect: {
-								id: parseInt(user_id),
-							},
-						},
-						payment_method: {
-							connect: {
-								id: parseInt(payment_method_id),
+								id: parseInt(userId),
 							},
 						},
 						status: "paid", // Mark the order as paid for free courses
@@ -77,12 +73,7 @@ module.exports = {
 					},
 					user: {
 						connect: {
-							id: parseInt(user_id),
-						},
-					},
-					payment_method: {
-						connect: {
-							id: parseInt(payment_method_id),
+							id: parseInt(userId),
 						},
 					},
 					reference: generateOrderReference(),

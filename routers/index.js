@@ -9,7 +9,7 @@ const express = require("express"),
 	paymentMethodRouter = require("./paymentMethod.router"),
 	orderRouter = require("./order.router"),
 	profileRouter = require("./user.router"),
-	progressRouter = require("./progress.router");
+	enrollRouter = require("./enrollment.router");
 
 router.use("/auth", authRouter);
 router.use("/categories", categoryRouter);
@@ -20,6 +20,6 @@ router.use("/ratings", ratingRouter);
 router.use("/paymentMethods", paymentMethodRouter);
 router.use("/orders", orderRouter);
 router.use("/profiles", profileRouter);
-router.use("/enrollments", progressRouter);
+router.use("/enrollments", enrollRouter);
 
 module.exports = router;

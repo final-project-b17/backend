@@ -14,4 +14,5 @@ module.exports = {
 	courseMaterials: prisma.CourseMaterial,
 	paymentMethods: prisma.paymentMethod,
 	progress: prisma.UserCourseProgress,
+	enrollments: prisma.Enrollment,
 };
