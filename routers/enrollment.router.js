@@ -1,6 +1,5 @@
 const express = require("express"),
 	router = express.Router(),
-	progressController = require("../controllers/progress.controller"),
 	enrollmentController = require("../controllers/enrollment.controller");
 const authenticateUser = require("../middlewares/authentication");
 
