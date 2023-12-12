@@ -45,16 +45,8 @@
 			"description": "Materials API"
 		},
 		{
-			"name": "Payment Method",
-			"description": "Payment Methods API"
-		},
-		{
 			"name": "User Progress",
 			"description": "User Progress API"
-		},
-		{
-			"name": "Order Course",
-			"description": "Orders API"
 		},
 		{
 			"name": "Rating",
@@ -1753,7 +1745,7 @@
 				"tags": ["Profiles"],
 				"security": [
 					{
-						"bearerAuth": []
+						"BearerAuth": []
 					}
 				],
 				"responses": {
@@ -1918,6 +1910,11 @@
 			"post": {
 				"summary": "Create a new rating",
 				"tags": ["Rating"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -2019,7 +2016,7 @@
 						"description": "ID of the rating",
 						"required": true,
 						"schema": {
-						  "type": "integer"
+							"type": "integer"
 						}
 					}
 				],

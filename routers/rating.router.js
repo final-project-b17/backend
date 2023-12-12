@@ -1,11 +1,12 @@
 const express = require("express"),
-    router = express.Router(),
-    ratingController = require("../controllers/rating.controller");
+	router = express.Router(),
+	ratingController = require("../controllers/rating.controller");
+const authenticateUser = require("../middlewares/authentication");
 
-router.post("/create", ratingController.createRating);
-router.get("/", ratingController.getRatings);
-router.get("/:id", ratingController.getRatingId);
-router.put("/update/:id", ratingController.updateRatingId);
-router.delete("/delete/:id", ratingController.deleteRatingId);
+router.post("/create", authenticateUser, ratingController.createRating);
+router.get("/", authenticateUser, ratingController.getRatings);
+router.get("/:id", authenticateUser, ratingController.getRatingId);
+router.put("/update/:id", authenticateUser, ratingController.updateRatingId);
+router.delete("/delete/:id", authenticateUser, ratingController.deleteRatingId);
 
 module.exports = router;

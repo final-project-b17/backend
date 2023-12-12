@@ -86,10 +86,26 @@ module.exports = {
 				});
 			}
 
+			// Calculate average rating for each course
+			const coursesWithRating = coursesData.map((course) => {
+				const ratings =
+					course.ratings?.map((rating) => {
+						const validRating = parseFloat(rating.rating); // Assuming 'rating' is the field containing the rating value
+						return !isNaN(validRating) && validRating >= 0 && validRating <= 5 ? validRating : 0;
+					}) || [];
+
+				const averageRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+
+				return {
+					...course,
+					averageRating: averageRating,
+				};
+			});
+
 			res.status(200).json({
 				status: "success",
 				message: "Data for all courses successfully obtained!",
-				courses: coursesData,
+				courses: coursesWithRating,
 				pagination: {
 					currentPage: page,
 					pageSize: pageSize,
@@ -131,10 +147,23 @@ module.exports = {
 				});
 			}
 
+			const ratings =
+				coursesData.ratings?.map((rating) => {
+					const validRating = parseFloat(rating.rating); // Assuming 'rating' is the field containing the rating value
+					return !isNaN(validRating) && validRating >= 0 && validRating <= 5 ? validRating : 0;
+				}) || [];
+
+			const averageRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+
+			const courseWithRating = {
+				...coursesData,
+				averageRating: averageRating,
+			};
+
 			return res.status(200).json({
 				success: true,
 				message: "Success for retrieving course data",
-				courses: coursesData,
+				courses: courseWithRating,
 			});
 		} catch (error) {
 			console.log(error);
