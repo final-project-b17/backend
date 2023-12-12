@@ -4,7 +4,7 @@ const express = require("express"),
 const authenticateUser = require("../middlewares/authentication");
 
 router.post("/create", authenticateUser, ratingController.createRating);
-router.get("/", authenticateUser, ratingController.getRatings);
+router.get("/", ratingController.getRatings);
 router.get("/:id", authenticateUser, ratingController.getRatingId);
 router.put("/update/:id", authenticateUser, ratingController.updateRatingId);
 router.delete("/delete/:id", authenticateUser, ratingController.deleteRatingId);
