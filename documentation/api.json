@@ -1805,7 +1805,7 @@
 				"tags": ["Orders"],
 				"security": [
 					{
-						"bearerAuth": []
+						"BearerAuth": []
 					}
 				],
 				"requestBody": {
@@ -1961,6 +1961,11 @@
 			"get": {
 				"tags": ["Rating"],
 				"summary": "Get details of a rating by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -2013,6 +2018,11 @@
 			"put": {
 				"tags": ["Rating"],
 				"summary": "Update rating by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -2066,6 +2076,11 @@
 			"delete": {
 				"tags": ["Rating"],
 				"summary": "Delete rating by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -2118,7 +2133,6 @@
 					"content": {
 						"application/json": {
 							"example": {
-								"user_id": 1,
 								"course_id": 1
 							}
 						}
@@ -2172,12 +2186,12 @@
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
-						  	"application/json": {
+							"application/json": {
 								"example": {
 									"success": false,
 									"error": "Internal Server Error"
 								}
-						  	}
+							}
 						}
 					}
 				}
@@ -2189,7 +2203,7 @@
 				"tags": ["Enrollment"],
 				"security": [
 					{
-						"bearerAuth": []
+						"BearerAuth": []
 					}
 				],
 				"responses": {
@@ -2229,7 +2243,7 @@
 				}
 			}
 		},
-		"/enrollment/complete/{course_material_id}": {
+		"/enrollments/complete/{course_material_id}": {
 			"post": {
 				"summary": "Mark material as complete",
 				"tags": ["Enrollment"],
@@ -2245,7 +2259,7 @@
 						"required": true,
 						"schema": {
 							"type": "integer"
-					  	}
+						}
 					}
 				],
 				"responses": {
