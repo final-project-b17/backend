@@ -59,6 +59,10 @@
 		{
 			"name": "Rating",
 			"description": "Ratings API"
+		},
+		{
+			"name": "Enrollment",
+			"description": "Enrollment API"
 		}
 	],
 	"paths": {
@@ -2084,6 +2088,199 @@
 								"example": {
 									"success": true,
 									"message": "Rating deleted successfully"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/enrollments/create": {
+			"post": {
+				"summary": "Create a new Enrollment",
+				"tags": ["Enrollment"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": "true",
+					"content": {
+						"application/json": {
+							"example": {
+								"user_id": 1,
+								"course_id": 1
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Enrollment successful",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "You have already enrolled in this course."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Premium course, payment required"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Course not found."
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+						  	"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+						  	}
+						}
+					}
+				}
+			}
+		},
+		"/enrollments/progress": {
+			"get": {
+				"summary": "Get enrolled courses with progress",
+				"tags": ["Enrollment"],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Enrolled courses retrieved successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": []
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Unauthorized, Login first!"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enrollment/complete/{course_material_id}": {
+			"post": {
+				"summary": "Mark material as complete",
+				"tags": ["Enrollment"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "course_material_id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+					  	}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Material marked as complete successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Material marked as complete successfully."
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Material not found or already marked as complete by the user."
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Material not found."
 								}
 							}
 						}
