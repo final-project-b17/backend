@@ -18,6 +18,7 @@ const generateStore = (destination) => {
 
 const allowedLogoTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 const allowedThumbnailTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+const allowedAvatarTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 
 module.exports = {
     logo: multer({
@@ -42,6 +43,21 @@ module.exports = {
                 callback(null, true);
             } else {
                 const err = new Error(`Only ${allowedThumbnailTypes.join(', ')} are allowed to upload`);
+                callback(err);
+            }
+        },
+        onError: (err, next) => {
+            next(err);
+        },
+    }),
+
+    avatar: multer({
+        storage: generateStore('./public/images'),
+        fileFilter: (req, file, callback) => {
+            if (allowedAvatarTypes.includes(file.mimetype)) {
+                callback(null, true);
+            } else {
+                const err = new Error(`Only ${allowedAvatarTypes.join(', ')} are allowed to upload`);
                 callback(err);
             }
         },
