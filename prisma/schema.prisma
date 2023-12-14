@@ -107,7 +107,7 @@ model Profile {
   user_id Int    @unique
   name    String
   no_telp String
-  avatar  String
+  avatar  String?
   city    String
   country String
   user    User   @relation(fields: [user_id], references: [id])
