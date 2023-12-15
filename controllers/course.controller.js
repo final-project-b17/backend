@@ -1,10 +1,12 @@
 const { courses } = require("../models"),
 	utils = require("../utils");
 
+const { ImageKit } = require("../utils");
+
 require("dotenv").config();
 
 module.exports = {
-	// Display all courses with pagination, search, filter
+	// Display all courses with pagination, search, and multiple filter
 	listCourse: async (req, res) => {
 		try {
 			// Set pagination
@@ -34,21 +36,44 @@ module.exports = {
 				: {};
 
 			// Set filter by rating, price, release date, category, type, and level courses
+			const categoryFilter = req.query.category
+				? {
+						category_id: {
+							in: req.query.category.split(",").map((id) => parseInt(id)),
+						},
+				  }
+				: {};
+
+			const levelFilter = req.query.level
+				? {
+						level: {
+							in: req.query.level.split(","),
+						},
+				  }
+				: {};
+
 			const filterOptions = {
 				where: {
 					...searchFilter,
 					rating: req.query.rating ? { gte: req.query.rating } : undefined,
 					price: req.query.price ? { lte: req.query.price } : undefined,
 					createdAt: req.query.newlyReleased ? { gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) } : undefined,
-					category_id: req.query.category ? parseInt(req.query.category) : undefined,
 					type_course: req.query.typeCourse || undefined,
-					level: req.query.level || undefined,
+					...levelFilter,
+					...categoryFilter,
 				},
 				// Sort by newly created courses
 				orderBy: { createdAt: "desc" },
 				skip: skip,
 				take: pageSize,
-				include: { chapters: true, materials: true, orders: true, comments: true, ratings: true, userProgress: true },
+				include: {
+					chapters: true,
+					materials: true,
+					orders: true,
+					comments: true,
+					ratings: true,
+					userProgress: true,
+				},
 			};
 
 			const coursesData = await courses.findMany(filterOptions);
@@ -61,10 +86,26 @@ module.exports = {
 				});
 			}
 
+			// Calculate average rating for each course
+			const coursesWithRating = coursesData.map((course) => {
+				const ratings =
+					course.ratings?.map((rating) => {
+						const validRating = parseFloat(rating.rating); // Assuming 'rating' is the field containing the rating value
+						return !isNaN(validRating) && validRating >= 0 && validRating <= 5 ? validRating : 0;
+					}) || [];
+
+				const averageRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+
+				return {
+					...course,
+					averageRating: averageRating,
+				};
+			});
+
 			res.status(200).json({
 				status: "success",
 				message: "Data for all courses successfully obtained!",
-				courses: coursesData,
+				courses: coursesWithRating,
 				pagination: {
 					currentPage: page,
 					pageSize: pageSize,
@@ -106,10 +147,23 @@ module.exports = {
 				});
 			}
 
+			const ratings =
+				coursesData.ratings?.map((rating) => {
+					const validRating = parseFloat(rating.rating); // Assuming 'rating' is the field containing the rating value
+					return !isNaN(validRating) && validRating >= 0 && validRating <= 5 ? validRating : 0;
+				}) || [];
+
+			const averageRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+
+			const courseWithRating = {
+				...coursesData,
+				averageRating: averageRating,
+			};
+
 			return res.status(200).json({
 				success: true,
 				message: "Success for retrieving course data",
-				courses: coursesData,
+				courses: courseWithRating,
 			});
 		} catch (error) {
 			console.log(error);
@@ -123,30 +177,39 @@ module.exports = {
 	// Adding new course
 	createCourse: async (req, res) => {
 		try {
-			// Check if the user has admin role
-			// if (req.userRole !== "admin") {
-			// 	return res.status(403).json({
-			// 		success: false,
-			// 		message: "Permission denied. Only admins can create courses.",
-			// 	});
-			// }
+			const { title, description, price, type_course, level, url_group, category_id } = req.body;
 
-			// Validate and create the new course
+			const newCourseData = {
+				title,
+				description,
+				price: parseFloat(price),
+				type_course,
+				level,
+				url_group,
+				category_id: parseInt(category_id),
+			};
+
+			if (req.file) {
+				const fileToString = req.file.buffer.toString("base64");
+				const currentDate = new Date();
+				const formattedDate = currentDate.toISOString().split("T")[0].replace(/-/g, ""); // Get current date in YYYYMMDD format
+				const fileName = `thumbnail_${formattedDate}`;
+
+				const uploadFile = await ImageKit.upload({
+					fileName: fileName,
+					file: fileToString,
+				});
+
+				newCourseData.thumbnail = uploadFile.url;
+			}
+
 			const createdCourse = await courses.create({
-				data: {
-					title: req.body.title,
-					description: req.body.description,
-					price: parseFloat(req.body.price),
-					type_course: req.body.type_course,
-					level: req.body.level,
-					url_group: req.body.url_group,
-					category_id: parseInt(req.body.category_id),
-				},
+				data: newCourseData,
 			});
 
 			res.status(201).json({
 				success: true,
-				message: "Course created successfully!",
+				message: "Course created successfully",
 				course: createdCourse,
 			});
 		} catch (error) {
@@ -176,6 +239,20 @@ module.exports = {
 				...(url_group && { url_group }),
 				...(category_id && { category_id: parseInt(category_id) }),
 			};
+
+			if (req.file) {
+				const fileToString = req.file.buffer.toString("base64");
+				const currentDate = new Date();
+				const formattedDate = currentDate.toISOString().split("T")[0].replace(/-/g, ""); // Get current date in YYYYMMDD format
+				const fileName = `thumbnail_${formattedDate}`;
+
+				const uploadFile = await ImageKit.upload({
+					fileName: fileName,
+					file: fileToString,
+				});
+
+				updatedData.thumbnail = uploadFile.url;
+			}
 
 			const updatedCourse = await courses.update({
 				where: { id: courseId },

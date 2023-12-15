@@ -9,13 +9,14 @@ const xenditApiUrl = "https://api.xendit.co/v2/invoices";
 module.exports = {
 	createOrder: async (req, res) => {
 		try {
-			const { course_id, user_id, payment_method_id } = req.body;
+			const userId = req.user.id;
+			const { course_id } = req.body;
 
 			// Check if the user has already purchased the course
 			const existingOrder = await prisma.order.findFirst({
 				where: {
 					course_id: parseInt(course_id),
-					user_id: parseInt(user_id),
+					user_id: parseInt(userId),
 					status: "paid",
 				},
 			});
@@ -24,7 +25,42 @@ module.exports = {
 				return res.status(400).json({ error: "User has already purchased this course" });
 			}
 
-			// Retrieve course details, user details, and calculate total price
+			// Retrieve course details
+			const course = await prisma.course.findUnique({
+				where: { id: parseInt(course_id) },
+			});
+
+			if (!course) {
+				return res.status(404).json({ error: "Course not found" });
+			}
+
+			// Check if the course is free
+			if (course.type_course == "free") {
+				// If the course is free, mark the order as paid without creating a payment link
+				const orderDetails = await prisma.order.create({
+					include: {
+						user: true,
+					},
+					data: {
+						course: {
+							connect: {
+								id: parseInt(course_id),
+							},
+						},
+						user: {
+							connect: {
+								id: parseInt(userId),
+							},
+						},
+						status: "paid", // Mark the order as paid for free courses
+						reference: generateOrderReference(),
+					},
+				});
+
+				return res.status(201).json({ order: orderDetails, message: "Free course order created successfully" });
+			}
+
+			// For premium courses, continue with the payment process
 			const orderDetails = await prisma.order.create({
 				include: {
 					user: true,
@@ -37,40 +73,33 @@ module.exports = {
 					},
 					user: {
 						connect: {
-							id: parseInt(user_id),
-						},
-					},
-					payment_method: {
-						connect: {
-							id: parseInt(payment_method_id),
+							id: parseInt(userId),
 						},
 					},
 					reference: generateOrderReference(),
+					status: "paid", // Set the initial status as paid
 				},
-			});
-
-			// Retrieve course details and calculate total price
-			const course = await prisma.course.findUnique({
-				where: { id: course_id },
 			});
 
 			const amount = course.price;
 
 			// Call Xendit API to create a payment link
-			const xenditResponse = await createXenditInvoice(
-				orderDetails.reference,
-				orderDetails.user.email, // Accessing the username from the related user
-				amount
-			);
+			const xenditResponse = await createXenditInvoice(orderDetails.reference, orderDetails.user.email, amount);
+
+			// Assuming Xendit response contains a payment status and other details
+			const paymentStatus = xenditResponse.status;
+
+			if (paymentStatus === "paid") {
+				// If payment is successful, update the order status to "paid"
+				await prisma.order.update({
+					where: { id: orderDetails.id },
+					data: { status: "paid" },
+				});
+			}
 
 			// Assuming Xendit response contains a payment link and callback URL
 			const paymentLink = xenditResponse.invoice_url;
 			const callbackUrl = xenditResponse.callback_virtual_account_created;
-
-			await prisma.order.update({
-				where: { id: orderDetails.id },
-				data: { status: "paid" },
-			});
 
 			res.status(201).json({ order: orderDetails, paymentLink, callbackUrl });
 		} catch (error) {

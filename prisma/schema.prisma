@@ -28,106 +28,120 @@ enum UserRole {
 
 enum StatusPayment {
   unpaid
+  pending
   paid
 }
 
 model Course {
-  id            Int       @id @default(autoincrement())
-  title         String
-  description   String
-  price         Float
-  type_course   TypeCourse
-  level         LevelCourse
-  url_group     String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  category_id   Int
-  Category      Category  @relation(fields: [category_id], references: [id])
-  chapters      Chapter[]
-  materials     CourseMaterial[]
-  orders        Order[]
-  comments      Comment[]
-  ratings       Rating[]
-  userProgress  UserCourseProgress[]
+  id           Int                  @id @default(autoincrement())
+  title        String
+  description  String
+  price        Float?
+  type_course  TypeCourse
+  level        LevelCourse
+  url_group    String
+  thumbnail    String?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  category_id  Int
+  Category     Category             @relation(fields: [category_id], references: [id])
+  chapters     Chapter[]
+  materials    CourseMaterial[]
+  enrollments  Enrollment[]
+  orders       Order[]
+  comments     Comment[]
+  ratings      Rating[]
+  userProgress UserCourseProgress[]
 }
 
 model Chapter {
-  id            Int      @id @default(autoincrement())
-  title         String
-  course_id     Int
-  content       String
-  Course        Course   @relation(fields: [course_id], references: [id], onDelete: Cascade)
-  materials     CourseMaterial[]
-  userProgress  UserCourseProgress[]
+  id           Int                  @id @default(autoincrement())
+  title        String
+  course_id    Int
+  content      String
+  Course       Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  materials    CourseMaterial[]
+  userProgress UserCourseProgress[]
 }
 
 model CourseMaterial {
-  id          Int       @id @default(autoincrement())
-  chapter_id  Int
-  course_id   Int
-  title       String
-  content     String
-  url_video   String
-  chapters    Chapter @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
-  courses     Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  id           Int                  @id @default(autoincrement())
+  chapter_id   Int
+  course_id    Int
+  title        String
+  content      String
+  url_video    String
+  chapters     Chapter              @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+  courses      Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
   userProgress UserCourseProgress[]
 }
 
 model Category {
-  id     Int      @id @default(autoincrement())
-  title  String
-  courses Course[]
+  id        Int      @id @default(autoincrement())
+  title     String
+  thumbnail String?
+  courses   Course[]
 }
 
 model User {
-  id                  Int       @id @default(autoincrement())
-  username            String
-  email               String    @unique
-  password            String
-  role                UserRole
-  otp_code            String?
-  is_verified         Boolean @default(false)
-  resetPasswordToken  String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  orders              Order[]
-  profile             Profile?
-  comments            Comment[]
-  ratings             Rating[]
-  userProgress        UserCourseProgress[]
+  id                 Int                  @id @default(autoincrement())
+  username           String               @unique
+  email              String               @unique
+  password           String
+  role               UserRole
+  otp_code           String?
+  resetPasswordToken String?
+  is_verified        Boolean              @default(false)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  orders             Order[]
+  enrollments  Enrollment[]
+  profile            Profile?
+  comments           Comment[]
+  ratings            Rating[]
+  userProgress       UserCourseProgress[]
 }
 
 model Profile {
-  id      Int     @id @default(autoincrement())
-  user_id Int     @unique
+  id      Int    @id @default(autoincrement())
+  user_id Int    @unique
   name    String
   no_telp String
-  avatar  String
+  avatar  String?
   city    String
   country String
-  user    User    @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id])
+}
+
+model Enrollment {
+  id           Int      @id @default(autoincrement())
+  user_id      Int      
+  course_id    Int      
+  enrolled_at  DateTime @default(now())
+  completed_at DateTime?
+  is_completed Boolean  @default(false)
+  users        User     @relation(fields: [user_id], references: [id])
+  courses      Course   @relation(fields: [course_id], references: [id])
 }
 
 model Order {
-  id                 Int       @id @default(autoincrement())
+  id                 Int           @id @default(autoincrement())
   course_id          Int
   user_id            Int
-  payment_methods_id Int
+  payment_methods_id Int?
   status             StatusPayment @default(unpaid)
   reference          String
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  course             Course    @relation(fields: [course_id], references: [id])
-  user               User      @relation(fields: [user_id], references: [id])
-  payment_method     PaymentMethod @relation(fields: [payment_methods_id], references: [id])
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  course             Course        @relation(fields: [course_id], references: [id])
+  user               User          @relation(fields: [user_id], references: [id])
 }
 
 model PaymentMethod {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   name      String
   logo      String
-  is_active Boolean @default(false)
-  orders    Order[]
+  is_active Boolean @default(true)
 }
 
 model Comment {
@@ -135,32 +149,33 @@ model Comment {
   user_id   Int
   course_id Int
   content   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  users     User      @relation(fields: [user_id], references: [id])
-  courses   Course    @relation(fields: [course_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User     @relation(fields: [user_id], references: [id])
+  courses   Course   @relation(fields: [course_id], references: [id])
 }
 
 model Rating {
-  id       Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   course_id Int
-  user_id  Int
-  rating   Float
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  course   Course    @relation(fields: [course_id], references: [id])
-  user     User      @relation(fields: [user_id], references: [id])
+  user_id   Int
+  rating    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [course_id], references: [id])
+  user      User     @relation(fields: [user_id], references: [id])
 }
 
 model UserCourseProgress {
-  id                  Int       @id @default(autoincrement())
-  user_id             Int
-  course_id           Int
-  chapter_id          Int
-  course_material_id  Int
-  completed_at        DateTime
-  users               User      @relation(fields: [user_id], references: [id])
-  courses             Course    @relation(fields: [course_id], references: [id])
-  chapters            Chapter   @relation(fields: [chapter_id], references: [id])
-  materials           CourseMaterial @relation(fields: [course_material_id], references: [id])
+  id                 Int            @id @default(autoincrement())
+  user_id            Int
+  course_id          Int
+  chapter_id         Int
+  course_material_id Int
+  is_completed       Boolean        @default(false)
+  completed_at       DateTime?
+  users              User           @relation(fields: [user_id], references: [id])
+  courses            Course         @relation(fields: [course_id], references: [id])
+  chapters           Chapter        @relation(fields: [chapter_id], references: [id])
+  materials          CourseMaterial @relation(fields: [course_material_id], references: [id])
 }

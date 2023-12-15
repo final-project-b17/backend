@@ -85,6 +85,7 @@ module.exports = {
 
 			// Send email with OTP
 			const transporter = nodemailer.createTransport({
+				service: "gmail",
 				host: process.env.EMAIL_HOST,
 				port: process.env.EMAIL_PORT,
 				secure: false,
@@ -129,14 +130,14 @@ module.exports = {
 	login: async (req, res) => {
 		try {
 			// Check if email already exist?
-			const findUser = await users.findFirst({
+			const findUser = await users.findUnique({
 				where: {
 					email: req.body.email,
 				},
 			});
 
 			if (!findUser) {
-				res.status(404).json({
+				return res.status(404).json({
 					success: false,
 					error: "Your email is not registered in our system",
 				});
@@ -204,6 +205,7 @@ module.exports = {
 			});
 
 			const transporter = nodemailer.createTransport({
+				service: "gmail",
 				host: process.env.EMAIL_HOST,
 				port: process.env.EMAIL_PORT,
 				secure: false,
@@ -217,7 +219,7 @@ module.exports = {
 				from: "reset-password@pedjuangilmu.up.railway.app",
 				to: req.body.email,
 				subject: "Reset Password",
-				html: `<p>Reset Password <a href="{{url}}/set-password/${resetPasswordToken}">Click Here</a></p>`,
+				html: `<p>Reset Password <a href="/api/v1/set-password/${resetPasswordToken}">Click Here</a></p>`,
 			};
 
 			transporter.sendMail(mailOptions, (err) => {
@@ -360,6 +362,7 @@ module.exports = {
 
 			// Send email with the new OTP
 			const transporter = nodemailer.createTransport({
+				service: "gmail",
 				host: process.env.EMAIL_HOST,
 				port: process.env.EMAIL_PORT,
 				secure: false,

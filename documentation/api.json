@@ -45,28 +45,29 @@
 			"description": "Materials API"
 		},
 		{
-			"name": "Payment Menthod",
-			"description": "Payment Methods API"
-		},
-		{
 			"name": "User Progress",
 			"description": "User Progress API"
 		},
 		{
-			"name": "Order Course",
-			"description": "Orders API"
+			"name": "Rating",
+			"description": "Ratings API"
+		},
+		{
+			"name": "Enrollment",
+			"description": "Enrollment API"
 		}
 	],
 	"paths": {
 		"/courses": {
 			"get": {
-				"summary": "Get a list of courses with pagination, search, and filter",
+				"summary": "List all courses with pagination, search, and multiple filters",
 				"tags": ["Course"],
 				"parameters": [
 					{
 						"name": "page",
 						"in": "query",
 						"description": "Page number for pagination",
+						"required": false,
 						"schema": {
 							"type": "integer",
 							"default": 1
@@ -75,7 +76,8 @@
 					{
 						"name": "search",
 						"in": "query",
-						"description": "Search query for courses",
+						"description": "Search query string",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
@@ -84,14 +86,16 @@
 						"name": "rating",
 						"in": "query",
 						"description": "Minimum rating for courses",
+						"required": false,
 						"schema": {
-							"type": "integer"
+							"type": "number"
 						}
 					},
 					{
 						"name": "price",
 						"in": "query",
 						"description": "Maximum price for courses",
+						"required": false,
 						"schema": {
 							"type": "number"
 						}
@@ -99,23 +103,17 @@
 					{
 						"name": "newlyReleased",
 						"in": "query",
-						"description": "Filter newly released courses",
+						"description": "Filter newly released courses within the last 7 days",
+						"required": false,
 						"schema": {
 							"type": "boolean"
 						}
 					},
 					{
-						"name": "category",
-						"in": "query",
-						"description": "Category ID for filtering courses",
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
 						"name": "typeCourse",
 						"in": "query",
-						"description": "Type of course for filtering",
+						"description": "Filter courses by type: free, premium",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
@@ -123,7 +121,17 @@
 					{
 						"name": "level",
 						"in": "query",
-						"description": "Level of courses for filtering",
+						"description": "Filter courses by level: pemula, menengah, lanjutan (multiple values can be separated by commas)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "category",
+						"in": "query",
+						"description": "Filter courses by category (multiple values can be separated by commas)",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
@@ -131,19 +139,44 @@
 				],
 				"responses": {
 					"200": {
-						"description": "Successful response",
+						"description": "Courses retrieved successfully",
 						"content": {
 							"application/json": {
 								"example": {
 									"status": "success",
 									"message": "Data for all courses successfully obtained!",
-									"courses": [],
+									"courses": [
+										{
+											"id": 1,
+											"title": "Sample Course 1",
+											"description": "This is a sample course.",
+											"price": 29.99,
+											"type_course": "premium",
+											"level": "beginner",
+											"url_group": "https://example.com/group",
+											"category_id": 1,
+											"thumbnail": "https://example.com/thumbnail.jpg",
+											"createdAt": "2023-12-01T12:34:56.789Z",
+											"updatedAt": "2023-12-01T12:34:56.789Z"
+										}
+									],
 									"pagination": {
 										"currentPage": 1,
 										"pageSize": 10,
-										"totalItems": 0,
-										"totalPages": 0
+										"totalItems": 100,
+										"totalPages": 10
 									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No courses found with the specified criteria",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "No courses found with the specified criteria"
 								}
 							}
 						}
@@ -169,28 +202,62 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Course Title",
-								"description": "Description of course",
-								"price": 200000,
-								"type_course": "free",
-								"level": "pemula",
-								"url_group": "www.discord.com/backend2",
-								"category_id": 2
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string"
+									},
+									"description": {
+										"type": "string"
+									},
+									"price": {
+										"type": "number"
+									},
+									"type_course": {
+										"type": "string"
+									},
+									"level": {
+										"type": "string"
+									},
+									"url_group": {
+										"type": "string"
+									},
+									"category_id": {
+										"type": "integer"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary"
+									}
+								},
+								"required": ["title", "description", "price", "type_course", "level", "url_group", "category_id"]
 							}
 						}
 					}
 				},
 				"responses": {
-					"200": {
-						"description": "Successful response",
+					"201": {
+						"description": "Course created successfully",
 						"content": {
 							"application/json": {
 								"example": {
 									"success": true,
-									"message": "Created!",
-									"categories": {}
+									"message": "Course created successfully",
+									"course": {
+										"id": 1,
+										"title": "Sample Course",
+										"description": "This is a sample course.",
+										"price": 29.99,
+										"type_course": "premium",
+										"level": "beginner",
+										"url_group": "https://example.com/group",
+										"category_id": 1,
+										"thumbnail": "https://example.com/thumbnail.jpg",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
 								}
 							}
 						}
@@ -253,40 +320,67 @@
 		},
 		"/courses/update/{id}": {
 			"put": {
-				"summary": "Update a course by ID",
+				"summary": "Update course by ID",
 				"tags": ["Course"],
 				"parameters": [
 					{
 						"name": "id",
 						"in": "path",
-						"description": "ID of the course to be updated",
+						"description": "ID of the course to update",
 						"required": true,
 						"schema": {
-							"type": "integer",
-							"format": "int64"
+							"type": "integer"
 						}
 					}
 				],
 				"requestBody": {
-					"description": "Updated course data",
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Updated Title",
-								"description": "Updated Description",
-								"price": 29.99,
-								"type_course": "premium",
-								"level": "lanjutan",
-								"url_group": "https://updated-url.com",
-								"category_id": 1
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string",
+										"description": "Title of the course"
+									},
+									"description": {
+										"type": "string",
+										"description": "Description of the course"
+									},
+									"price": {
+										"type": "number",
+										"description": "Price of the course"
+									},
+									"type_course": {
+										"type": "string",
+										"description": "Type of the course (e.g., free, premium)"
+									},
+									"level": {
+										"type": "string",
+										"description": "Level of the course (e.g., beginner, intermediate)"
+									},
+									"url_group": {
+										"type": "string",
+										"description": "URL of the course group"
+									},
+									"category_id": {
+										"type": "integer",
+										"description": "ID of the course category"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary",
+										"description": "Thumbnail image file"
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "Successful response",
+						"description": "Course updated successfully",
 						"content": {
 							"application/json": {
 								"example": {
@@ -294,15 +388,16 @@
 									"message": "Course updated successfully",
 									"course": {
 										"id": 1,
-										"title": "Updated Title",
-										"description": "Updated Description",
-										"price": 29.99,
+										"title": "Updated Course",
+										"description": "This course has been updated.",
+										"price": 39.99,
 										"type_course": "premium",
-										"level": "advanced",
-										"url_group": "https://updated-url.com",
+										"level": "intermediate",
+										"url_group": "https://example.com/updated-group",
+										"category_id": 2,
+										"thumbnail": "https://example.com/updated-thumbnail.jpg",
 										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-02T12:34:56.789Z",
-										"category_id": 1
+										"updatedAt": "2023-12-02T12:34:56.789Z"
 									}
 								}
 							}
@@ -901,22 +996,205 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"title": "Category Title"
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string",
+										"description": "Title of the category"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary",
+										"description": "Thumbnail image file"
+									}
+								},
+								"required": ["title", "thumbnail"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Category created successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Category created successfully",
+									"category": {
+										"id": 1,
+										"title": "New Category",
+										"thumbnail": "https://example.com/new-category-thumbnail.jpg",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/detail/{id}": {
+			"get": {
+				"summary": "Get details of a category by ID",
+				"tags": ["Category"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID of the category"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Category details retrieved successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"categories": {
+										"id": 1,
+										"title": "Category Title"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Category not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/update/{id}": {
+			"put": {
+				"summary": "Update category by ID",
+				"tags": ["Category"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the category to update",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string",
+										"description": "Updated title of the category"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary",
+										"description": "Updated thumbnail image file"
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "Successful response",
+						"description": "Category updated successfully",
 						"content": {
 							"application/json": {
 								"example": {
 									"success": true,
-									"message": "Created!",
-									"categories": {}
+									"message": "Category updated successfully",
+									"category": {
+										"id": 1,
+										"title": "Updated Category",
+										"thumbnail": "https://example.com/updated-category-thumbnail.jpg",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-02T12:34:56.789Z"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/delete/{id}": {
+			"delete": {
+				"summary": "Delete category by ID",
+				"tags": ["Category"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID of the category"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Category deleted successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Category deleted successfully"
 								}
 							}
 						}
@@ -1344,40 +1622,53 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"name": "John Doe",
-								"no_telp": "1234567890",
-								"avatar": "https://example.com/avatar.jpg",
-								"city": "City",
-								"country": "Country"
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Updated name of the user"
+									},
+									"no_telp": {
+										"type": "string",
+										"description": "Updated phone number of the user"
+									},
+									"avatar": {
+										"type": "string",
+										"format": "binary",
+										"description": "Updated avatar image file"
+									},
+									"city": {
+										"type": "string",
+										"description": "Updated city of the user"
+									},
+									"country": {
+										"type": "string",
+										"description": "Updated country of the user"
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "Profile updated successfully",
+						"description": "User profile updated successfully",
 						"content": {
 							"application/json": {
 								"example": {
-									"id": 1,
-									"user_id": 1,
-									"name": "John Doe",
-									"no_telp": "1234567890",
-									"avatar": "https://example.com/avatar.jpg",
-									"city": "City",
-									"country": "Country",
-									"createdAt": "2023-12-01T12:34:56.789Z",
-									"updatedAt": "2023-12-01T12:34:56.789Z",
-									"user": {
-										"id": 1,
-										"username": "john_doe",
-										"email": "john.doe@example.com",
-										"role": "user",
-										"is_verified": true,
+									"success": true,
+									"message": "User profile updated successfully",
+									"profile": {
+										"user_id": 1,
+										"name": "Updated User",
+										"no_telp": "123456789",
+										"avatar": "https://example.com/updated-avatar.jpg",
+										"city": "Updated City",
+										"country": "Updated Country",
 										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-01T12:34:56.789Z"
+										"updatedAt": "2023-12-02T12:34:56.789Z"
 									}
 								}
 							}
@@ -1447,6 +1738,573 @@
 								"example": {
 									"success": false,
 									"error": "Invalid current password"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/my-course": {
+			"get": {
+				"summary": "Get course enrollment history for the logged-in user",
+				"tags": ["Profiles"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Course enrollment history retrieved successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"courseHistory": [
+										{
+											"id": 1,
+											"user_id": 123,
+											"course_id": 456,
+											"order_date": "2023-12-01T12:34:56.789Z",
+											"status": "completed",
+											"course": {
+												"id": 456,
+												"title": "Course Title",
+												"description": "Course Description",
+												"price": 29.99,
+												"type_course": "video",
+												"level": "beginner",
+												"url_group": "https://example.com/course-group",
+												"category_id": 789,
+												"createdAt": "2023-12-01T12:34:56.789Z",
+												"updatedAt": "2023-12-01T12:34:56.789Z"
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/orders": {
+			"post": {
+				"summary": "Create a new order",
+				"tags": ["Orders"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"course_id": 1,
+								"user_id": 1,
+								"payment_method_id": 1
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Order created successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"order": {
+										"id": 1,
+										"status": "paid",
+										"reference": "ORDER_123456789",
+										"createdAt": "2023-12-01T12:34:56.789Z",
+										"updatedAt": "2023-12-01T12:34:56.789Z",
+										"user": {
+											"id": 1,
+											"email": "user@example.com",
+											"createdAt": "2023-12-01T12:34:56.789Z",
+											"updatedAt": "2023-12-01T12:34:56.789Z"
+										}
+									},
+									"message": "Free course order created successfully",
+									"paymentLink": "https://example.com/payment-link",
+									"callbackUrl": "https://example.com/callback-url"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "User has already purchased this course",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": "User has already purchased this course"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Course not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": "Course not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/ratings": {
+			"get": {
+				"summary": "Get all ratings",
+				"tags": ["Rating"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": []
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ratings/create": {
+			"post": {
+				"summary": "Create a new rating",
+				"tags": ["Rating"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"course_id": 1,
+								"user_id": 1,
+								"rating": 4.8
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ratings/{id}": {
+			"get": {
+				"tags": ["Rating"],
+				"summary": "Get details of a rating by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the chapter",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Rating not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Rating not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ratings/update/{id}": {
+			"put": {
+				"tags": ["Rating"],
+				"summary": "Update rating by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the rating",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"example": {
+								"course_id": 1,
+								"user_id": 1,
+								"rating": 4
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ratings/delete/{id}": {
+			"delete": {
+				"tags": ["Rating"],
+				"summary": "Delete rating by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the rating",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Rating deleted successfully"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"/enrollments/create": {
+			"post": {
+				"summary": "Create a new Enrollment",
+				"tags": ["Enrollment"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": "true",
+					"content": {
+						"application/json": {
+							"example": {
+								"course_id": 1
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Enrollment successful",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "You have already enrolled in this course."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Premium course, payment required"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Course not found."
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enrollments/progress": {
+			"get": {
+				"summary": "Get enrolled courses with progress",
+				"tags": ["Enrollment"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Enrolled courses retrieved successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": []
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Unauthorized, Login first!"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enrollments/complete/{course_material_id}": {
+			"post": {
+				"summary": "Mark material as complete",
+				"tags": ["Enrollment"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "course_material_id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Material marked as complete successfully",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Material marked as complete successfully."
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Material not found or already marked as complete by the user."
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Material not found."
 								}
 							}
 						}
