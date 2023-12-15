@@ -130,14 +130,14 @@ module.exports = {
 	login: async (req, res) => {
 		try {
 			// Check if email already exist?
-			const findUser = await users.findFirst({
+			const findUser = await users.findUnique({
 				where: {
 					email: req.body.email,
 				},
 			});
 
 			if (!findUser) {
-				res.status(404).json({
+				return res.status(404).json({
 					success: false,
 					error: "Your email is not registered in our system",
 				});

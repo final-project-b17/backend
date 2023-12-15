@@ -1623,15 +1623,29 @@
 					"required": true,
 					"content": {
 						"multipart/form-data": {
-							"examples": {
-								"example1": {
-									"summary": "Example of form data",
-									"value": {
-										"name": "John Doe",
-										"no_telp": "1234567890",
-										"avatar": "https://example.com/avatar.jpg",
-										"city": "City",
-										"country": "Country"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Updated name of the user"
+									},
+									"no_telp": {
+										"type": "string",
+										"description": "Updated phone number of the user"
+									},
+									"avatar": {
+										"type": "string",
+										"format": "binary",
+										"description": "Updated avatar image file"
+									},
+									"city": {
+										"type": "string",
+										"description": "Updated city of the user"
+									},
+									"country": {
+										"type": "string",
+										"description": "Updated country of the user"
 									}
 								}
 							}
@@ -1640,27 +1654,21 @@
 				},
 				"responses": {
 					"200": {
-						"description": "Profile updated successfully",
+						"description": "User profile updated successfully",
 						"content": {
 							"application/json": {
 								"example": {
-									"id": 1,
-									"user_id": 1,
-									"name": "John Doe",
-									"no_telp": "1234567890",
-									"avatar": "https://example.com/avatar.jpg",
-									"city": "City",
-									"country": "Country",
-									"createdAt": "2023-12-01T12:34:56.789Z",
-									"updatedAt": "2023-12-01T12:34:56.789Z",
-									"user": {
-										"id": 1,
-										"username": "john_doe",
-										"email": "john.doe@example.com",
-										"role": "user",
-										"is_verified": true,
+									"success": true,
+									"message": "User profile updated successfully",
+									"profile": {
+										"user_id": 1,
+										"name": "Updated User",
+										"no_telp": "123456789",
+										"avatar": "https://example.com/updated-avatar.jpg",
+										"city": "Updated City",
+										"country": "Updated Country",
 										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-01T12:34:56.789Z"
+										"updatedAt": "2023-12-02T12:34:56.789Z"
 									}
 								}
 							}
