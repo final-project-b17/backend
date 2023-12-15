@@ -1622,13 +1622,18 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
-							"example": {
-								"name": "John Doe",
-								"no_telp": "1234567890",
-								"avatar": "https://example.com/avatar.jpg",
-								"city": "City",
-								"country": "Country"
+						"multipart/form-data": {
+							"examples": {
+								"example1": {
+									"summary": "Example of form data",
+									"value": {
+										"name": "John Doe",
+										"no_telp": "1234567890",
+										"avatar": "https://example.com/avatar.jpg",
+										"city": "City",
+										"country": "Country"
+									}
+								}
 							}
 						}
 					}
