@@ -1812,7 +1812,7 @@
 			}
 		},
 
-		"/orders": {
+		"/orders/create": {
 			"post": {
 				"summary": "Create a new order",
 				"tags": ["Orders"],
