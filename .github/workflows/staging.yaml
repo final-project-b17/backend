@@ -1,0 +1,24 @@
+name: remote ssh command
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          whoami
+          ./staging.sh
