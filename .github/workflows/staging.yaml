@@ -21,3 +21,4 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           whoami
+          ./staging.sh
