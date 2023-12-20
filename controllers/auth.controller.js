@@ -13,6 +13,7 @@ const generateOTP = () => {
 };
 
 module.exports = {
+	// Register new account
 	register: async (req, res) => {
 		try {
 			// Check if email exists
@@ -97,10 +98,31 @@ module.exports = {
 
 			// Configure the email sent
 			const mailOptions = {
-				from: "noreply@staging-pedjualilmu.up.railwapp.app",
+				from: "noreply",
 				to: req.body.email,
-				subject: "Email Verification",
-				html: `<p>Your OTP for email verification is: ${otp}</p>`,
+				subject: "OTP Mail Verification",
+				html: `
+					<div style="font-family: Arial, sans-serif; text-align: center; color: #333;">			
+						<h2 style="color: #333;">Welcome to PedjuangIlmu!</h2>
+						<p style="color: #555; line-height: 1.6;">
+							Thank you for choosing PedjuangIlmu as your platform to explore and share knowledge. To complete your registration and unlock the power of knowledge, please verify your email by entering the OTP below:
+						</p>
+					
+						<div style="background-color: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+							<h3 style="margin-bottom: 10px; color: #333;">Your One-Time Passcode (OTP):</h3>
+							<p style="font-size: 24px; color: #333; padding: 10px; background-color: #fff; border-radius: 5px;">${otp}</p>
+						</div>
+					
+						<p style="line-height: 1.6; color: #888;">
+							If you didn't request this OTP, you can safely ignore this email. Otherwise, welcome aboard! Explore the vast world of knowledge with PedjuangIlmu.
+						</p>
+					
+						<p style="color: #555; margin-top: 30px;">
+							Best regards,<br/>
+							The PedjuangIlmu Team
+						</p>
+					</div>
+				`,
 			};
 
 			transporter.sendMail(mailOptions, (err) => {
@@ -127,6 +149,7 @@ module.exports = {
 		}
 	},
 
+	// Login user
 	login: async (req, res) => {
 		try {
 			// Check if email already exist?
@@ -175,6 +198,7 @@ module.exports = {
 		}
 	},
 
+	// Request reset password
 	resetPassword: async (req, res) => {
 		try {
 			// Check email already exist?
@@ -219,7 +243,25 @@ module.exports = {
 				from: "reset-password@pedjuangilmu.up.railway.app",
 				to: req.body.email,
 				subject: "Reset Password",
-				html: `<p>Reset Password <a href="/api/v1/set-password/${resetPasswordToken}">Click Here</a></p>`,
+				html: `
+					<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+						<h2 style="color: #333; text-align: center;">Password Reset Invocation</h2>
+						<p style="color: #555; text-align: center;">
+							We received a ${req.body.email} request to reset your password. Click the link below to reset it:
+						</p>
+						
+						<div style="text-align: center; margin-top: 20px;">
+							<a href="https://b17-final-project-staging.vercel.app/reset-password?resetPasswordToken=${resetPasswordToken}" 
+							style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+							Reset Password
+							</a>
+						</div>
+						
+						<p style="color: #555; text-align: center; margin-top: 20px;">
+							If you didn't request this, please ignore this email. Your account security is important to us.
+						</p>
+					</div>
+			  `,
 			};
 
 			transporter.sendMail(mailOptions, (err) => {
@@ -234,6 +276,8 @@ module.exports = {
 				return res.status(200).json({
 					success: true,
 					successMessage: "Password reset link was sent to your email!",
+					email: req.body.email, // Change to the appropriate data you want to send
+					resetPasswordToken,
 				});
 			});
 		} catch (error) {
@@ -245,26 +289,32 @@ module.exports = {
 		}
 	},
 
+	// Set a new password
 	setPassword: async (req, res) => {
 		try {
+			const { resetPasswordToken } = req.query;
+			const { newPassword } = req.body;
+
 			// Check resetPasswordToken user
 			const findUser = await users.findFirst({
 				where: {
-					resetPasswordToken: req.body.key,
+					resetPasswordToken,
 				},
 			});
 
 			if (!findUser) {
 				return res.status(400).json({
 					error: true,
-					errorMessage: "Invalid or expired reset key!",
+					errorMessage: "Invalid or expired reset password token!",
 				});
 			}
 
-			// Update password and set null on resetPasswordToken fields
+			// Update password and set null on resetPasswordToken field
+			const hashedPassword = await utils.cryptPassword(newPassword);
+
 			await users.update({
 				data: {
-					password: await utils.cryptPassword(req.body.password),
+					password: hashedPassword,
 					resetPasswordToken: null,
 				},
 				where: {
@@ -277,7 +327,7 @@ module.exports = {
 				successMessage: "Password reset was successful!",
 			});
 		} catch (error) {
-			console.log(error);
+			console.error("Error details:", error);
 			return res.status(500).json({
 				error: true,
 				errorMessage: "An error occurred",
@@ -285,6 +335,7 @@ module.exports = {
 		}
 	},
 
+	// Verify email using otp
 	verifyEmail: async (req, res) => {
 		try {
 			// Check email and otp same on system && user already exist?
@@ -328,6 +379,7 @@ module.exports = {
 		}
 	},
 
+	// Re send OTP
 	resendOTP: async (req, res) => {
 		try {
 			// Check if user is'nt verified and user already exist?
@@ -373,10 +425,31 @@ module.exports = {
 			});
 
 			const mailOptions = {
-				from: "noreply@staging-pedjualilmu.up.railwapp.app",
+				from: "noreply",
 				to: email,
 				subject: "Resend OTP for Email Verification",
-				html: `<p>Your new OTP for email verification is: ${newOTP}</p>`,
+				html: `
+				<div style="font-family: Arial, sans-serif; text-align: center; color: #333;">			
+				  <h2 style="color: #333;">Welcome to PedjuangIlmu!</h2>
+				  <p style="color: #555; line-height: 1.6;">
+					Thank you for choosing PedjuangIlmu as your platform to explore and share knowledge. To complete your registration and unlock the power of knowledge, please verify your email by entering the OTP below:
+				  </p>
+			
+				  <div style="background-color: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+					<h3 style="margin-bottom: 10px; color: #333;">Your One-Time Passcode (OTP):</h3>
+					<p style="font-size: 24px; color: #333; padding: 10px; background-color: #fff; border-radius: 5px;">${newOTP}</p>
+				  </div>
+			
+				  <p style="line-height: 1.6; color: #888;">
+					If you didn't request this OTP, you can safely ignore this email. Otherwise, welcome aboard! Explore the vast world of knowledge with PedjuangIlmu.
+				  </p>
+			
+				  <p style="color: #555; margin-top: 30px;">
+					Best regards,<br/>
+					The PedjuangIlmu Team
+				  </p>
+				</div>
+			  `,
 			};
 
 			transporter.sendMail(mailOptions, (err) => {
