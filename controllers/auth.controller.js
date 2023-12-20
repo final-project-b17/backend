@@ -293,7 +293,15 @@ module.exports = {
 	setPassword: async (req, res) => {
 		try {
 			const { resetPasswordToken } = req.query;
-			const { newPassword } = req.body;
+			const { newPassword, confirmPassword } = req.body;
+
+			// Check if newPassword and confirmPassword match
+			if (newPassword !== confirmPassword) {
+				return res.status(400).json({
+					error: true,
+					errorMessage: "Password and confirmation do not match.",
+				});
+			}
 
 			// Check resetPasswordToken user
 			const findUser = await users.findFirst({
