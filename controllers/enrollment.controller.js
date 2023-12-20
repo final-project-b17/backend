@@ -155,8 +155,6 @@ module.exports = {
 						},
 					},
 				},
-				skip: skip,
-				take: pageSize,
 			};
 
 			const userEnrollments = await enrollments.findMany(filterOptions);
@@ -174,8 +172,6 @@ module.exports = {
 			// 			},
 			// 		},
 			// 	},
-			// 	skip: skip,
-			// 	take: pageSize,
 			// });
 
 			const enrolledCourses = userEnrollments.map((enrollment) => {
