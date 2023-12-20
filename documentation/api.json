@@ -1773,9 +1773,9 @@
 						"required": false,
 						"schema": {
 							"type": "string",
-							"enum": ["Paling-Baru", "Paling-Populer", "all"]
+							"enum": ["paling-baru", "paling-populer", "all"]
 						},
-						"example": "Paling-Baru"
+						"example": "paling-baru"
 					}
 				],
 				"responses": {
