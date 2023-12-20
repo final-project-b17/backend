@@ -1396,15 +1396,25 @@
 			}
 		},
 		"/auth/set-password": {
-			"post": {
+			"put": {
 				"summary": "Set new password after reset",
 				"tags": ["Authentication"],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "resetPasswordToken",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"description": "Reset password token"
+					}
+				],
 				"requestBody": {
 					"content": {
 						"application/json": {
 							"example": {
-								"key": "reset_key_token",
-								"password": "newpassword"
+								"newPassword": "newpassword"
 							}
 						}
 					}
