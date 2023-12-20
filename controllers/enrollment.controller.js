@@ -111,40 +111,37 @@ module.exports = {
 
 	// Get enrolled courses history for a user with progress percentage
 	getUserEnrolledCourses: async (req, res) => {
-		try {	
+		try {
 			const userId = req.user.id;
-
+	
 			if (!userId) {
 				return res.status(401).json({
 					success: false,
 					error: "Unauthorized, Login first!",
 				});
 			}
+	
+			const { filter } = req.query;
 
-			//pagination
-			// const page = req.query.page ? parseInt(req.query.page) : 1;
-			// const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
-			// const skip = (page - 1) * pageSize;
+			const orderOption =
+			filter === "paling-baru" ? { enrolled_at: "desc" } : undefined;
 
-			//filter options
-			const searchQuery = req.query.search || "";
-			const searchFilter = searchQuery
-				?{
-					OR: [
-						{
-							title: {
-								contains: searchQuery,
-								mode: "insensitive",
+			const popularityOption =
+			filter === "paling-populer"
+				? {
+					courses: {
+						enrollments: {
+							_count: {
+								user_id: "desc",
 							},
 						},
-					],
+					},
 				}
-				: {};
+				: undefined;
 
 			const filterOptions = {
 				where: {
 					user_id: userId,
-					...searchFilter,
 				},
 				include: {
 					courses: {
@@ -155,25 +152,11 @@ module.exports = {
 						},
 					},
 				},
+				orderBy: orderOption || popularityOption, 
 			};
-
 			const userEnrollments = await enrollments.findMany(filterOptions);
-
-			// const userEnrollments = await enrollments.findMany({
-			// 	where: {
-			// 		user_id: userId,
-			// 	},
-			// 	include: {
-			// 		courses: {
-			// 			include: {
-			// 				chapters: true,
-			// 				materials: true,
-			// 				userProgress: true,
-			// 			},
-			// 		},
-			// 	},
-			// });
-
+	
+			console.log("userEnrollments:", userEnrollments);
 			const enrolledCourses = userEnrollments.map((enrollment) => {
 				const { courses } = enrollment;
 

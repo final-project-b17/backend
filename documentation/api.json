@@ -1780,7 +1780,7 @@
 						"required": false,
 						"schema": {
 							"type": "string",
-							"enum": ["paling-baru", "paling-populer", "all"]
+							"enum": ["paling-baru", "paling-popular"]
 						},
 						"example": "paling-baru"
 					}
