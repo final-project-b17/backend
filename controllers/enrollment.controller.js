@@ -111,7 +111,7 @@ module.exports = {
 
 	// Get enrolled courses history for a user with progress percentage
 	getUserEnrolledCourses: async (req, res) => {
-		try {
+		try {	
 			const userId = req.user.id;
 
 			if (!userId) {
@@ -121,19 +121,62 @@ module.exports = {
 				});
 			}
 
-			const userEnrollments = await enrollments.findMany({
+			//pagination
+			// const page = req.query.page ? parseInt(req.query.page) : 1;
+			// const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
+			// const skip = (page - 1) * pageSize;
+
+			//filter options
+			const searchQuery = req.query.search || "";
+			const searchFilter = searchQuery
+				?{
+					OR: [
+						{
+							title: {
+								contains: searchQuery,
+								mode: "insensitive",
+							},
+						},
+					],
+				}
+				: {};
+
+			const filterOptions = {
 				where: {
 					user_id: userId,
+					...searchFilter,
 				},
 				include: {
 					courses: {
 						include: {
+							chapters: true,
 							materials: true,
 							userProgress: true,
 						},
 					},
 				},
-			});
+				skip: skip,
+				take: pageSize,
+			};
+
+			const userEnrollments = await enrollments.findMany(filterOptions);
+
+			// const userEnrollments = await enrollments.findMany({
+			// 	where: {
+			// 		user_id: userId,
+			// 	},
+			// 	include: {
+			// 		courses: {
+			// 			include: {
+			// 				chapters: true,
+			// 				materials: true,
+			// 				userProgress: true,
+			// 			},
+			// 		},
+			// 	},
+			// 	skip: skip,
+			// 	take: pageSize,
+			// });
 
 			const enrolledCourses = userEnrollments.map((enrollment) => {
 				const { courses } = enrollment;

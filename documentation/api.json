@@ -1765,6 +1765,19 @@
 						"BearerAuth": []
 					}
 				],
+				"parameters": [
+					{
+						"name": "filter",
+						"in": "query",
+						"description": "Filter courses by status (Paling Baru, Paling Populer)",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": ["Paling-Baru", "Paling-Populer", "all"]
+						},
+						"example": "Paling-Baru"
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "Course enrollment history retrieved successfully",
