@@ -3,7 +3,7 @@
 	"info": {
 		"title": "PedjuangIlmu API",
 		"version": "1.0.0",
-		"description": "API for managing courses"
+		"description": "API for staging managing courses"
 	},
 	"components": {
 		"securitySchemes": {
@@ -43,10 +43,6 @@
 		{
 			"name": "Course Material",
 			"description": "Materials API"
-		},
-		{
-			"name": "User Progress",
-			"description": "User Progress API"
 		},
 		{
 			"name": "Rating",
