@@ -16,7 +16,7 @@
 	},
 	"servers": [
 		{
-			"url": "dev.amarafiif.my.id/api/v1/"
+			"url": "/api/v1/"
 		}
 	],
 	"tags": [
