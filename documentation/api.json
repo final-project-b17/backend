@@ -3,7 +3,7 @@
 	"info": {
 		"title": "PedjuangIlmu API",
 		"version": "1.0.0",
-		"description": "API for managing courses"
+		"description": "API for staging managing courses"
 	},
 	"components": {
 		"securitySchemes": {
@@ -43,10 +43,6 @@
 		{
 			"name": "Course Material",
 			"description": "Materials API"
-		},
-		{
-			"name": "User Progress",
-			"description": "User Progress API"
 		},
 		{
 			"name": "Rating",
@@ -1396,15 +1392,26 @@
 			}
 		},
 		"/auth/set-password": {
-			"post": {
+			"put": {
 				"summary": "Set new password after reset",
 				"tags": ["Authentication"],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "resetPasswordToken",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"description": "Reset password token"
+					}
+				],
 				"requestBody": {
 					"content": {
 						"application/json": {
 							"example": {
-								"key": "reset_key_token",
-								"password": "newpassword"
+								"newPassword": "newpassword",
+								"confirmPassword": "confirmPassword"
 							}
 						}
 					}
@@ -1765,6 +1772,35 @@
 						"BearerAuth": []
 					}
 				],
+				"parameters": [
+					{
+						"name": "filter",
+						"in": "query",
+						"description": "Filter courses by status (Paling Baru, Paling Populer)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "category_id",
+						"in": "query",
+						"description": "Filter courses by category (multiple values can be separated by commas)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "level",
+						"in": "query",
+						"description": "Filter courses by level (pemula, menengah, lanjutan)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "Course enrollment history retrieved successfully",
@@ -1812,7 +1848,7 @@
 			}
 		},
 
-		"/orders": {
+		"/orders/create": {
 			"post": {
 				"summary": "Create a new order",
 				"tags": ["Orders"],
@@ -1827,7 +1863,6 @@
 						"application/json": {
 							"example": {
 								"course_id": 1,
-								"user_id": 1,
 								"payment_method_id": 1
 							}
 						}
