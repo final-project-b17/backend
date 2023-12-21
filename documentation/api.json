@@ -1779,13 +1779,11 @@
 						"description": "Filter courses by status (Paling Baru, Paling Populer)",
 						"required": false,
 						"schema": {
-							"type": "string",
-							"enum": ["paling-baru", "paling-popular"]
-						},
-						"example": "paling-baru"
+							"type": "string"
+						}
 					},
 					{
-						"name": "category",
+						"name": "category_id",
 						"in": "query",
 						"description": "Filter courses by category (multiple values can be separated by commas)",
 						"required": false,
@@ -1796,7 +1794,7 @@
 					{
 						"name": "level",
 						"in": "query",
-						"description": "Filter courses by level (multiple values can be separated by commas)",
+						"description": "Filter courses by level (pemula, menengah, lanjutan)",
 						"required": false,
 						"schema": {
 							"type": "string"
