@@ -1776,6 +1776,24 @@
 							"enum": ["paling-baru", "paling-popular"]
 						},
 						"example": "paling-baru"
+					},
+					{
+						"name": "category",
+						"in": "query",
+						"description": "Filter courses by category (multiple values can be separated by commas)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "level",
+						"in": "query",
+						"description": "Filter courses by level (multiple values can be separated by commas)",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
 					}
 				],
 				"responses": {

@@ -113,35 +113,60 @@ module.exports = {
 	getUserEnrolledCourses: async (req, res) => {
 		try {
 			const userId = req.user.id;
-	
+
 			if (!userId) {
 				return res.status(401).json({
 					success: false,
 					error: "Unauthorized, Login first!",
 				});
 			}
-	
-			const { filter } = req.query;
+
+			const { filter, category_id, level } = req.query;
 
 			const orderOption =
-			filter === "paling-baru" ? { enrolled_at: "desc" } : undefined;
+				filter === "paling-baru" ? { enrolled_at: "desc" } : undefined;
 
 			const popularityOption =
-			filter === "paling-populer"
+				filter === "paling-populer"
+					? {
+						courses: {
+							enrollments: {
+								_count: {
+									user_id: "desc",
+								},
+							},
+						},
+					}
+					: undefined;
+
+			const categoryFilter = category_id
 				? {
-					courses: {
-						enrollments: {
-							_count: {
-								user_id: "desc",
+					where: {
+						courses: {
+							category_id: {
+								in: category_id.split(",").map((id) => parseInt(id)),
 							},
 						},
 					},
 				}
-				: undefined;
+				: {};
+			
+			const levelFilter = level
+				? {
+					courses: {
+						level: {
+							in: level.split(","),
+						},
+					},
+				}
+				: {};
 
+			
 			const filterOptions = {
 				where: {
 					user_id: userId,
+					...categoryFilter.where,
+					...levelFilter,
 				},
 				include: {
 					courses: {
@@ -149,14 +174,16 @@ module.exports = {
 							chapters: true,
 							materials: true,
 							userProgress: true,
+							ratings: true,
 						},
+						...categoryFilter.courses,
 					},
 				},
-				orderBy: orderOption || popularityOption, 
+				orderBy: orderOption || popularityOption || { enrolled_at: "desc" },
 			};
+
 			const userEnrollments = await enrollments.findMany(filterOptions);
-	
-			console.log("userEnrollments:", userEnrollments);
+			
 			const enrolledCourses = userEnrollments.map((enrollment) => {
 				const { courses } = enrollment;
 
@@ -168,8 +195,17 @@ module.exports = {
 						is_completed: enrollment.is_completed,
 						progressPercentage: 0,
 						userProgress: [],
+						averageRating: null,
 					};
 				}
+
+				const ratings = courses.ratings || [];
+				const validRatings = ratings.map((rating) => {
+					const validRating = parseFloat(rating.rating);
+					return !isNaN(validRating) && validRating >= 0 && validRating <= 5 ? validRating : 0;
+				});
+
+				const averageRating = validRatings.length ? validRatings.reduce((a, b) => a + b, 0) / validRatings.length : null;
 
 				const userId = req.user.id;
 				const userProgressForLoggedInUser = courses.userProgress.filter((progress) => progress.user_id === userId);
@@ -187,8 +223,13 @@ module.exports = {
 					is_completed: enrollment.is_completed,
 					progressPercentage,
 					userProgress: userProgressForLoggedInUser,
+					averageRating,
 				};
 			});
+
+			enrolledCourses.sort(
+				(a, b) => (b.averageRating || 0) - (a.averageRating || 0)
+			);
 
 			res.status(200).json({
 				success: true,
