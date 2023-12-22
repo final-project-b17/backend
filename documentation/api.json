@@ -146,6 +146,8 @@
 											"id": 1,
 											"title": "Sample Course 1",
 											"description": "This is a sample course.",
+											"target_audience": ["Mahasiswa", "Pejabat"],
+											"prerequisite": ["Menginstall VsCode", "Internet"],
 											"price": 29.99,
 											"type_course": "premium",
 											"level": "beginner",
@@ -213,6 +215,12 @@
 									"description": {
 										"type": "string"
 									},
+									"target_audience": {
+										"type": "string"
+									},
+									"prerequisite": {
+										"type": "string"
+									},
 									"price": {
 										"type": "number"
 									},
@@ -250,6 +258,8 @@
 										"id": 1,
 										"title": "Sample Course",
 										"description": "This is a sample course.",
+										"target_audience": ["Mahasiswa", "Pelajar"],
+										"prerequisite": ["Perangkat Komputer", "Internet"],
 										"price": 29.99,
 										"type_course": "premium",
 										"level": "beginner",
@@ -404,8 +414,8 @@
 										"id": 1,
 										"title": "Updated Course",
 										"description": "This course has been updated.",
-										"target_audience": "Target has been updated",
-										"prerequisite": "Prerequisite of the course has been updated",
+										"target_audience": ["Mahasiswa", "Pejabat"],
+										"prerequisite": ["Perangkat Pribadi", "Internet"],
 										"price": 39.99,
 										"type_course": "premium",
 										"level": "intermediate",

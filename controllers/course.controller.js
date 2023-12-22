@@ -177,7 +177,7 @@ module.exports = {
 	// Adding new course
 	createCourse: async (req, res) => {
 		try {
-			const { title, description, price, type_course, level, url_group, category_id } = req.body;
+			const { title, description, target_audience, prerequisite, price, type_course, level, url_group, category_id } = req.body;
 
 			const newCourseData = {
 				title,
@@ -189,6 +189,21 @@ module.exports = {
 				category_id: parseInt(category_id),
 			};
 
+			// Handle 'target_audience' separately to set it as an array
+			if (target_audience) {
+				newCourseData.target_audience = {
+					set: target_audience,
+				};
+			}
+
+			// Handle 'prerequisite' separately to set it as an array
+			if (prerequisite) {
+				newCourseData.prerequisite = {
+					set: prerequisite,
+				};
+			}
+
+			// Handle thumbnail with media handling imagekit
 			if (req.file) {
 				const fileToString = req.file.buffer.toString("base64");
 				const currentDate = new Date();
@@ -233,14 +248,26 @@ module.exports = {
 			const updatedData = {
 				...(title && { title }),
 				...(description && { description }),
-				...(target_audience && { target_audience }),
-				...(prerequisite && { prerequisite }),
 				...(price && { price: parseFloat(price) }),
 				...(type_course && { type_course }),
 				...(level && { level }),
 				...(url_group && { url_group }),
 				...(category_id && { category_id: parseInt(category_id) }),
 			};
+
+			// Handle 'target_audience' separately to set it as an array
+			if (target_audience) {
+				updatedData.target_audience = {
+					set: target_audience,
+				};
+			}
+
+			// Handle 'prerequisite' separately to set it as an array
+			if (prerequisite) {
+				updatedData.prerequisite = {
+					set: prerequisite,
+				};
+			}
 
 			if (req.file) {
 				const fileToString = req.file.buffer.toString("base64");

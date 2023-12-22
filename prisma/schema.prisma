@@ -36,8 +36,8 @@ model Course {
   id           Int                  @id @default(autoincrement())
   title        String
   description  String
-  target_audience String?
-  prerequisite String?
+  target_audience String[]
+  prerequisite String[]
   price        Float?
   type_course  TypeCourse
   level        LevelCourse
