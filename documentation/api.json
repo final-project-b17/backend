@@ -365,12 +365,18 @@
 										"description": "Description of the course"
 									},
 									"target_audience": {
-										"type": "string",
-										"target_audience": "Target audience of the course"
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"description": "Target audience of the course"
 									},
 									"prerequisite": {
-										"type": "string",
-										"prerequisite": "Prerequisite of the course"
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"description": "Prerequisite of the course"
 									},
 									"price": {
 										"type": "number",
