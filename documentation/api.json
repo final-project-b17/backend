@@ -195,6 +195,11 @@
 			"post": {
 				"summary": "Create a new course",
 				"tags": ["Course"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -318,6 +323,11 @@
 			"put": {
 				"summary": "Update course by ID",
 				"tags": ["Course"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -343,6 +353,14 @@
 									"description": {
 										"type": "string",
 										"description": "Description of the course"
+									},
+									"target_audience": {
+										"type": "string",
+										"target_audience": "Target audience of the course"
+									},
+									"prerequisite": {
+										"type": "string",
+										"prerequisite": "Prerequisite of the course"
 									},
 									"price": {
 										"type": "number",
@@ -386,6 +404,8 @@
 										"id": 1,
 										"title": "Updated Course",
 										"description": "This course has been updated.",
+										"target_audience": "Target has been updated",
+										"prerequisite": "Prerequisite of the course has been updated",
 										"price": 39.99,
 										"type_course": "premium",
 										"level": "intermediate",
@@ -417,6 +437,11 @@
 			"delete": {
 				"summary": "Delete a course by ID",
 				"tags": ["Course"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -501,6 +526,11 @@
 			"post": {
 				"summary": "Create a new chapter",
 				"tags": ["Chapter"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -595,6 +625,11 @@
 			"put": {
 				"tags": ["Chapter"],
 				"summary": "Update a specific chapter",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -647,6 +682,11 @@
 			"delete": {
 				"tags": ["Chapter"],
 				"summary": "Delete a specific chapter",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -730,6 +770,11 @@
 			"post": {
 				"summary": "Create a new course material",
 				"tags": ["Course Material"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"description": "Data for the new course material",
 					"required": true,
@@ -854,6 +899,11 @@
 			"put": {
 				"summary": "Update course material by ID",
 				"tags": ["Course Material"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -916,6 +966,11 @@
 			"delete": {
 				"summary": "Delete course materials by ID",
 				"tags": ["Course Material"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -989,6 +1044,11 @@
 			"post": {
 				"summary": "Create a new category",
 				"tags": ["Category"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -1103,6 +1163,11 @@
 			"put": {
 				"summary": "Update category by ID",
 				"tags": ["Category"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -1172,6 +1237,11 @@
 			"delete": {
 				"summary": "Delete category by ID",
 				"tags": ["Category"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",

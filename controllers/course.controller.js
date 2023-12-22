@@ -227,12 +227,14 @@ module.exports = {
 			const courseId = parseInt(req.params.id);
 
 			// Extract fields from the request body
-			const { title, description, price, type_course, level, url_group, category_id } = req.body;
+			const { title, description, target_audience, prerequisite, price, type_course, level, url_group, category_id } = req.body;
 
 			// Create a data object with only non-empty fields
 			const updatedData = {
 				...(title && { title }),
 				...(description && { description }),
+				...(target_audience && { target_audience }),
+				...(prerequisite && { prerequisite }),
 				...(price && { price: parseFloat(price) }),
 				...(type_course && { type_course }),
 				...(level && { level }),
