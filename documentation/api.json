@@ -751,7 +751,7 @@
 						"content": {
 							"application/json": {
 								"example": {
-									"status": true,
+									"success": true,
 									"data": [
 										{
 											"id": 1,
@@ -760,8 +760,8 @@
 											"title": "Material Title",
 											"content": "Material Content",
 											"url_video": "https://video-url.com",
-											"createdAt": "2023-12-01T12:34:56.789Z",
-											"updatedAt": "2023-12-02T12:34:56.789Z"
+											"video_duration": "PT55M2S",
+											"duration_in_minutes": 55
 										}
 									]
 								}
@@ -820,7 +820,8 @@
 										"title": "New Material Title",
 										"content": "Content of the new material",
 										"url_video": "https://example.com/video",
-										"createdAt": "2023-12-01T12:34:56.789Z"
+										"video_duration": "PT4M55S",
+										"duration_in_minutes": 55.5
 									}
 								}
 							}
@@ -870,8 +871,8 @@
 										"title": "Course Material Title",
 										"content": "Course Material Content",
 										"url_video": "https://example.com/video",
-										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-02T12:34:56.789Z",
+										"video_duration": "PT4M55S",
+										"duration_in_minutes": 55,
 										"chapters": {
 											"id": 1,
 											"title": "Chapter Title"
@@ -957,8 +958,8 @@
 										"title": "Updated Material Title",
 										"content": "Updated material content",
 										"url_video": "https://updated-video-url.com",
-										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-02T12:34:56.789Z"
+										"video_duration": "PT4M55S",
+										"duration_in_minutes": 55
 									}
 								}
 							}
