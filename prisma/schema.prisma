@@ -74,6 +74,7 @@ model CourseMaterial {
   content      String
   url_video    String
   video_duration String?
+  duration_in_minutes Float?
   chapters     Chapter              @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
   courses      Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
   userProgress UserCourseProgress[]

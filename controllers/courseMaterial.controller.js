@@ -133,6 +133,16 @@ module.exports = {
 					materials.map(async (material) => {
 						if (material.url_video) {
 							const videoDuration = await getVideoDuration(material.url_video);
+
+							// Update the database with video duration
+							await courseMaterials.update({
+								where: { id: material.id },
+								data: {
+									video_duration: videoDuration,
+									duration_in_minutes: videoDuration ? convertDurationToMinutes(videoDuration) : null,
+								},
+							});
+
 							return {
 								...material,
 								video_duration: videoDuration,
