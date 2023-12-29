@@ -152,7 +152,7 @@ module.exports = {
 	// Login user
 	login: async (req, res) => {
 		try {
-			// Check if email already exist?
+			// Check if email already exists
 			const findUser = await users.findUnique({
 				where: {
 					email: req.body.email,
@@ -166,21 +166,20 @@ module.exports = {
 				});
 			}
 
-			// Check email, user and is_verified
+			// Check email and user
 			if (bcrypt.compareSync(req.body.password, findUser.password)) {
-				if (!findUser.is_verified) {
-					return res.status(403).json({
-						success: false,
-						error: "Email not verified. Please verify your email first.",
-					});
-				}
-
 				// Generate token
 				const token = jwt.sign({ id: findUser.id }, secret_key, { expiresIn: "6h" });
+
+				if (!findUser.is_verified) {
+					// Optionally handle unverified users differently
+					console.log("User not verified. You may want to handle this case.");
+				}
 
 				return res.status(200).json({
 					data: {
 						token,
+						users: findUser,
 					},
 				});
 			}
@@ -348,6 +347,14 @@ module.exports = {
 		try {
 			// Check email and otp same on system && user already exist?
 			const { email, otp } = req.body;
+
+			// Check apakah user memasukkan email atau otp code
+			if (!email || !otp) {
+				return res.status(400).json({
+					error: true,
+					errorMessage: "Both email and OTP are required for verification",
+				});
+			}
 
 			const user = await users.findFirst({
 				where: {

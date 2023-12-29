@@ -49,6 +49,11 @@ module.exports = {
 				include: {
 					// Include any additional information you want from the courses
 					course: true,
+					chapters: true,
+					materials: true,
+					orders: true,
+					comments: true,
+					ratings: true,
 				},
 			});
 

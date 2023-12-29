@@ -146,6 +146,8 @@
 											"id": 1,
 											"title": "Sample Course 1",
 											"description": "This is a sample course.",
+											"target_audience": ["Mahasiswa", "Pejabat"],
+											"prerequisite": ["Menginstall VsCode", "Internet"],
 											"price": 29.99,
 											"type_course": "premium",
 											"level": "beginner",
@@ -195,6 +197,11 @@
 			"post": {
 				"summary": "Create a new course",
 				"tags": ["Course"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -206,6 +213,12 @@
 										"type": "string"
 									},
 									"description": {
+										"type": "string"
+									},
+									"target_audience": {
+										"type": "string"
+									},
+									"prerequisite": {
 										"type": "string"
 									},
 									"price": {
@@ -245,6 +258,8 @@
 										"id": 1,
 										"title": "Sample Course",
 										"description": "This is a sample course.",
+										"target_audience": ["Mahasiswa", "Pelajar"],
+										"prerequisite": ["Perangkat Komputer", "Internet"],
 										"price": 29.99,
 										"type_course": "premium",
 										"level": "beginner",
@@ -318,6 +333,11 @@
 			"put": {
 				"summary": "Update course by ID",
 				"tags": ["Course"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -343,6 +363,20 @@
 									"description": {
 										"type": "string",
 										"description": "Description of the course"
+									},
+									"target_audience": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"description": "Target audience of the course"
+									},
+									"prerequisite": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"description": "Prerequisite of the course"
 									},
 									"price": {
 										"type": "number",
@@ -386,6 +420,8 @@
 										"id": 1,
 										"title": "Updated Course",
 										"description": "This course has been updated.",
+										"target_audience": ["Mahasiswa", "Pejabat"],
+										"prerequisite": ["Perangkat Pribadi", "Internet"],
 										"price": 39.99,
 										"type_course": "premium",
 										"level": "intermediate",
@@ -417,6 +453,11 @@
 			"delete": {
 				"summary": "Delete a course by ID",
 				"tags": ["Course"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -501,6 +542,11 @@
 			"post": {
 				"summary": "Create a new chapter",
 				"tags": ["Chapter"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -595,6 +641,11 @@
 			"put": {
 				"tags": ["Chapter"],
 				"summary": "Update a specific chapter",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -647,6 +698,11 @@
 			"delete": {
 				"tags": ["Chapter"],
 				"summary": "Delete a specific chapter",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -695,7 +751,7 @@
 						"content": {
 							"application/json": {
 								"example": {
-									"status": true,
+									"success": true,
 									"data": [
 										{
 											"id": 1,
@@ -704,8 +760,8 @@
 											"title": "Material Title",
 											"content": "Material Content",
 											"url_video": "https://video-url.com",
-											"createdAt": "2023-12-01T12:34:56.789Z",
-											"updatedAt": "2023-12-02T12:34:56.789Z"
+											"video_duration": "PT55M2S",
+											"duration_in_minutes": 55
 										}
 									]
 								}
@@ -730,6 +786,11 @@
 			"post": {
 				"summary": "Create a new course material",
 				"tags": ["Course Material"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"description": "Data for the new course material",
 					"required": true,
@@ -759,7 +820,8 @@
 										"title": "New Material Title",
 										"content": "Content of the new material",
 										"url_video": "https://example.com/video",
-										"createdAt": "2023-12-01T12:34:56.789Z"
+										"video_duration": "PT4M55S",
+										"duration_in_minutes": 55.5
 									}
 								}
 							}
@@ -809,8 +871,8 @@
 										"title": "Course Material Title",
 										"content": "Course Material Content",
 										"url_video": "https://example.com/video",
-										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-02T12:34:56.789Z",
+										"video_duration": "PT4M55S",
+										"duration_in_minutes": 55,
 										"chapters": {
 											"id": 1,
 											"title": "Chapter Title"
@@ -854,6 +916,11 @@
 			"put": {
 				"summary": "Update course material by ID",
 				"tags": ["Course Material"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -891,8 +958,8 @@
 										"title": "Updated Material Title",
 										"content": "Updated material content",
 										"url_video": "https://updated-video-url.com",
-										"createdAt": "2023-12-01T12:34:56.789Z",
-										"updatedAt": "2023-12-02T12:34:56.789Z"
+										"video_duration": "PT4M55S",
+										"duration_in_minutes": 55
 									}
 								}
 							}
@@ -916,6 +983,11 @@
 			"delete": {
 				"summary": "Delete course materials by ID",
 				"tags": ["Course Material"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -989,6 +1061,11 @@
 			"post": {
 				"summary": "Create a new category",
 				"tags": ["Category"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -1103,6 +1180,11 @@
 			"put": {
 				"summary": "Update category by ID",
 				"tags": ["Category"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -1172,6 +1254,11 @@
 			"delete": {
 				"summary": "Delete category by ID",
 				"tags": ["Category"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",

@@ -1,11 +1,12 @@
 const express = require("express"),
 	router = express.Router(),
 	materialController = require("../controllers/courseMaterial.controller");
+const authenticateUser = require("../middlewares/authentication");
 
-router.post("/create", materialController.createCourseMaterials);
 router.get("/", materialController.listCourseMaterials);
 router.get("/:id", materialController.listCourseMaterialsId);
-router.put("/update/:id", materialController.updateCourseMaterialsId);
-router.delete("/delete/:id", materialController.deleteCourseMaterialsId);
+router.post("/create", authenticateUser, materialController.createCourseMaterials);
+router.put("/update/:id", authenticateUser, materialController.updateCourseMaterialsId);
+router.delete("/delete/:id", authenticateUser, materialController.deleteCourseMaterialsId);
 
 module.exports = router;

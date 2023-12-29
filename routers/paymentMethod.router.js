@@ -1,14 +1,13 @@
 const express = require("express"),
-    router = express.Router(),
-    multer = require('../middlewares/multer'),
-    multerLib = require('multer')(),
-    // multer = require('multer'),
-    paymentMethodController = require("../controllers/paymentMethod.controller");
+	router = express.Router(),
+	multerLib = require("multer")(),
+	paymentMethodController = require("../controllers/paymentMethod.controller");
+const authenticateUser = require("../middlewares/authentication");
 
-router.post('/create', multerLib.single('logo'), paymentMethodController.createPaymentMethod);
 router.get("/", paymentMethodController.getPaymentMethods);
 router.get("/:id", paymentMethodController.getPaymentMethodId);
-router.put("/update/:id", multerLib.single('logo'), paymentMethodController.updatePaymentMethodId);
-router.delete("/delete/:id", paymentMethodController.deletePaymentMethodId);
+router.post("/create", authenticateUser, multerLib.single("logo"), paymentMethodController.createPaymentMethod);
+router.put("/update/:id", authenticateUser, multerLib.single("logo"), paymentMethodController.updatePaymentMethodId);
+router.delete("/delete/:id", authenticateUser, paymentMethodController.deletePaymentMethodId);
 
 module.exports = router;

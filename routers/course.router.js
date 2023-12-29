@@ -1,13 +1,13 @@
 const express = require("express"),
 	router = express.Router(),
-	multer = require("../middlewares/multer"),
-	multerLib = require('multer')(),
+	multerLib = require("multer")(),
 	courseController = require("../controllers/course.controller");
+const authenticateUser = require("../middlewares/authentication");
 
 router.get("/", courseController.listCourse);
-router.post("/create", multerLib.single('thumbnail'), courseController.createCourse);
 router.get("/detail/:id", courseController.detailCourse);
-router.put("/update/:id", multerLib.single('thumbnail'), courseController.updateCourse);
-router.delete("/delete/:id", courseController.deleteCourseById);
+router.post("/create", authenticateUser, multerLib.single("thumbnail"), courseController.createCourse);
+router.put("/update/:id", authenticateUser, multerLib.single("thumbnail"), courseController.updateCourse);
+router.delete("/delete/:id", authenticateUser, courseController.deleteCourseById);
 
 module.exports = router;
