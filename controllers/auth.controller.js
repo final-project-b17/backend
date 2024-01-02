@@ -250,7 +250,7 @@ module.exports = {
 						</p>
 						
 						<div style="text-align: center; margin-top: 20px;">
-							<a href="https://b17-final-project-staging.vercel.app/reset-password?resetPasswordToken=${resetPasswordToken}" 
+							<a href="https://b17-final-project.vercel.app/reset-password?resetPasswordToken=${resetPasswordToken}" 
 							style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
 							Reset Password
 							</a>
