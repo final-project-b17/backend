@@ -51,6 +51,10 @@
 		{
 			"name": "Enrollment",
 			"description": "Enrollment API"
+		},
+		{
+			"name": "Payment Method",
+			"description": "Payment Methods API"
 		}
 	],
 	"paths": {
@@ -2444,6 +2448,298 @@
 					}
 				}
 			}
+		},
+
+		"/paymentMethods": {
+			"get": {
+				"summary": "Get all payment methods",
+				"tags": ["Payment Method"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": [
+										{
+											"id": 1,
+											"name": "PaymentMethod1",
+											"logo": "https://example.com/logo1.jpg" 
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/paymentMethods/{id}": {
+			"get": {
+				"summary": "Get details of a payment method by ID",
+				"tags": ["Payment Method"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"name": "PaymentMethod1",
+										"logo": "https://example.com/logo1.jpg"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Payment method not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Payment method not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/paymentMethods/create": {
+			"post": {
+				"summary": "Create a new payment method",
+				"tags": ["Payment Method"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Name of payment method"
+									},
+									"logo":{
+										"type": "string",
+										"format": "binary",
+										"description": "Logo image file"
+									}
+								},
+								"required": ["name", "logo"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"name": "NewPaymentMethod",
+										"logo": "https://example.com/new_logo.jpg"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/paymentMethods/update/{id}": {
+			"put": {
+				"summary": "Update a payment method by ID",
+				"tags": ["Payment Method"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Name of payment method"
+									},
+									"logo":{
+										"type": "string",
+										"format": "binary",
+										"description": "Logo image file"
+									}
+								},
+								"required": ["name", "logo"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"data": {
+										"id": 1,
+										"name": "UpdatedPaymentMethod",
+										"logo": "https://example.com/updated_logo.jpg"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Payment method not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Payment method not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/paymentMethods/delete/{id}": {
+			"delete": {
+				"summary": "Delete a payment method by ID",
+				"tags": ["Payment Method"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": true,
+									"message": "Payment method deleted successfully"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Payment method not found",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"message": "Payment method not found"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"example": {
+									"success": false,
+									"error": "Internal Server Error"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
+
