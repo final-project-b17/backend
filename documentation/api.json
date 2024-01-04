@@ -2507,7 +2507,11 @@
 							"application/json": {
 								"example": {
 									"success": true,
-									"data": {}
+									"data": {
+										"id": 1,
+										"name": "PaymentMethod1",
+										"logo": "https://example.com/logo1.jpg"
+									}
 								}
 							}
 						}
@@ -2680,7 +2684,7 @@
 				}
 			}
 		},
-		"paymentMethods/delete/{id}": {
+		"/paymentMethods/delete/{id}": {
 			"delete": {
 				"summary": "Delete a payment method by ID",
 				"tags": ["Payment Method"],
