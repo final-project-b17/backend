@@ -1,18 +1,70 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const axios = require("axios");
+const { orders } = require("../models");
 require("dotenv").config();
 
 const apiKey = process.env.XENDIT_API_KEY;
 const xenditApiUrl = "https://api.xendit.co/v2/invoices";
+const callbackUrl = process.env.XENDIT_CALLBACK_URL;
 
-module.exports = {
+// Helper function to generate a unique order reference
+const generateOrderReference = () => {
+	return `ORDER_${Date.now()}`;
+};
+
+// Helper function to create an invoice using Xendit API
+const createXenditInvoice = async (reference, email, amount, callbackUrl) => {
+	const authHeader = `Basic ${Buffer.from(apiKey + ":").toString("base64")}`;
+
+	const response = await axios.post(
+		xenditApiUrl,
+		{
+			external_id: reference,
+			amount,
+			payer_email: email,
+			description: "Course Payment",
+			callback_virtual_account_created: callbackUrl,
+		},
+		{
+			headers: {
+				Authorization: authHeader,
+			},
+		}
+	);
+
+	return response.data;
+};
+
+const orderController = {
+	// Get recent transactions course
+	myOrder: async (req, res) => {
+		try {
+			const userId = req.user.id;
+			const data = await orders.findMany({
+				where: {
+					user_id: userId,
+				},
+			});
+
+			return res.status(200).json({
+				success: true,
+				myOrder: data,
+			});
+		} catch (error) {
+			return res.status(500).json({
+				success: false,
+				error: "Internal Server Error",
+			});
+		}
+	},
+
+	// Handle to create payments
 	createOrder: async (req, res) => {
 		try {
 			const userId = req.user.id;
 			const { course_id } = req.body;
 
-			// Check if the user has already purchased the course
 			const existingOrder = await prisma.order.findFirst({
 				where: {
 					course_id: parseInt(course_id),
@@ -25,7 +77,6 @@ module.exports = {
 				return res.status(400).json({ error: "User has already purchased this course" });
 			}
 
-			// Retrieve course details
 			const course = await prisma.course.findUnique({
 				where: { id: parseInt(course_id) },
 			});
@@ -34,10 +85,10 @@ module.exports = {
 				return res.status(404).json({ error: "Course not found" });
 			}
 
-			// Check if the course is free
-			if (course.type_course == "free") {
-				// If the course is free, mark the order as paid without creating a payment link
-				const orderDetails = await prisma.order.create({
+			let orderDetails;
+
+			if (course.type_course === "free") {
+				orderDetails = await prisma.order.create({
 					include: {
 						user: true,
 					},
@@ -52,7 +103,7 @@ module.exports = {
 								id: parseInt(userId),
 							},
 						},
-						status: "paid", // Mark the order as paid for free courses
+						status: "paid",
 						reference: generateOrderReference(),
 					},
 				});
@@ -60,8 +111,7 @@ module.exports = {
 				return res.status(201).json({ order: orderDetails, message: "Free course order created successfully" });
 			}
 
-			// For premium courses, continue with the payment process
-			const orderDetails = await prisma.order.create({
+			orderDetails = await prisma.order.create({
 				include: {
 					user: true,
 				},
@@ -77,66 +127,60 @@ module.exports = {
 						},
 					},
 					reference: generateOrderReference(),
-					status: "paid", // Set the initial status as paid
+					status: "pending",
 				},
 			});
 
 			const amount = course.price;
 
-			// Call Xendit API to create a payment link
-			const xenditResponse = await createXenditInvoice(orderDetails.reference, orderDetails.user.email, amount);
+			const xenditResponse = await createXenditInvoice(orderDetails.reference, orderDetails.user.email, amount, callbackUrl);
 
-			// Assuming Xendit response contains a payment status and other details
 			const paymentStatus = xenditResponse.status;
 
-			if (paymentStatus === "paid") {
-				// If payment is successful, update the order status to "paid"
+			if (paymentStatus === "COMPLETED") {
 				await prisma.order.update({
 					where: { id: orderDetails.id },
 					data: { status: "paid" },
 				});
 			}
 
-			// Assuming Xendit response contains a payment link and callback URL
 			const paymentLink = xenditResponse.invoice_url;
-			const callbackUrl = xenditResponse.callback_virtual_account_created;
+			const xenditCallbackUrl = xenditResponse.callback_virtual_account_created;
 
-			res.status(201).json({ order: orderDetails, paymentLink, callbackUrl });
+			res.status(201).json({ order: orderDetails, paymentLink, xenditCallbackUrl });
 		} catch (error) {
 			console.error("Error creating order:", error);
 			res.status(500).json({ error: "Internal Server Error" });
 		}
 	},
-};
 
-// Helper function to generate a unique order reference
-const generateOrderReference = () => {
-	// Implement your logic to generate a unique reference
-	// This can be a combination of date, course ID, user ID, etc.
-	return `ORDER_${Date.now()}`;
-};
+	// Handle Callback from xendit
+	xenditCallback: async (req, res) => {
+		try {
+			const { external_id, status } = req.body;
 
-// Helper function to create an invoice using Xendit API
-const createXenditInvoice = async (reference, email, amount) => {
-	// Implement the logic to call the Xendit API to create an invoice
-	// You will need your Xendit API key and appropriate Xendit API endpoints
+			const statusOrder = await orders.findFirst({
+				where: {
+					reference: external_id,
+					status: "pending",
+				},
+			});
 
-	const authHeader = `Basic ${Buffer.from(apiKey + ":").toString("base64")}`;
+			await orders.update({
+				data: {
+					status: "paid",
+				},
+				where: {
+					id: statusOrder.id,
+				},
+			});
 
-	const response = await axios.post(
-		xenditApiUrl,
-		{
-			external_id: reference,
-			amount,
-			payer_email: email, // Change this to the user's email
-			description: "Course Payment",
-		},
-		{
-			headers: {
-				Authorization: authHeader,
-			},
+			return res.status(200).send("Success to update with status: " + status);
+		} catch (error) {
+			console.error("Error processing Xendit callback:", error);
+			return res.status(500).send("Internal Server Error");
 		}
-	);
-
-	return response.data;
+	},
 };
+
+module.exports = orderController;
