@@ -65,6 +65,7 @@ const orderController = {
 			const userId = req.user.id;
 			const { course_id } = req.body;
 
+			// Cek apakah user sudeh pernah membeli course ini dan statusnya paid
 			const existingOrder = await prisma.order.findFirst({
 				where: {
 					course_id: parseInt(course_id),
@@ -77,17 +78,40 @@ const orderController = {
 				return res.status(400).json({ error: "User has already purchased this course" });
 			}
 
-			const course = await prisma.course.findUnique({
-				where: { id: parseInt(course_id) },
+			// Check if there is an existing pending order
+			const existingOrderPending = await prisma.order.findFirst({
+				where: {
+					course_id: parseInt(course_id),
+					user_id: parseInt(userId),
+					status: "pending",
+				},
+				include: {
+					user: true,
+					course: true,
+				},
 			});
-
-			if (!course) {
-				return res.status(404).json({ error: "Course not found" });
-			}
 
 			let orderDetails;
 
-			if (course.type_course === "free") {
+			if (existingOrderPending) {
+				const newPaymentLink = await createXenditInvoice(existingOrderPending.reference, existingOrderPending.user.email, existingOrderPending.course.price);
+
+				orderDetails = {
+					...existingOrderPending,
+					paymentLink: newPaymentLink.invoice_url,
+				};
+
+				return res.status(200).json(orderDetails);
+			} else {
+				// No existing pending order, create a new order
+				const course = await prisma.course.findUnique({
+					where: { id: parseInt(course_id) },
+				});
+
+				if (!course) {
+					return res.status(404).json({ error: "Course not found" });
+				}
+
 				orderDetails = await prisma.order.create({
 					include: {
 						user: true,
@@ -103,38 +127,14 @@ const orderController = {
 								id: parseInt(userId),
 							},
 						},
-						status: "paid",
 						reference: generateOrderReference(),
+						status: "pending",
 					},
 				});
-
-				return res.status(201).json({ order: orderDetails, message: "Free course order created successfully" });
 			}
 
-			orderDetails = await prisma.order.create({
-				include: {
-					user: true,
-				},
-				data: {
-					course: {
-						connect: {
-							id: parseInt(course_id),
-						},
-					},
-					user: {
-						connect: {
-							id: parseInt(userId),
-						},
-					},
-					reference: generateOrderReference(),
-					status: "pending",
-				},
-			});
-
 			const amount = course.price;
-
 			const xenditResponse = await createXenditInvoice(orderDetails.reference, orderDetails.user.email, amount, callbackUrl);
-
 			const paymentStatus = xenditResponse.status;
 
 			if (paymentStatus === "COMPLETED") {
